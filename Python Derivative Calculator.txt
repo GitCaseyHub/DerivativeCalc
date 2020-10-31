@@ -1,5 +1,6 @@
+#Issue with mixed terms and further operations (i.e. [x+1]^(2) + 2 is bad, but each individual term is good)
+
 # Program to perform general differentiation
-# Need to add most special transcendental functions
 
 # Differentiates Single Polynomial Term
 def polyRule(function,variable):
@@ -50,7 +51,7 @@ def diffArctan(function,variable):
         coeffVar.replace(')','')
     return coeff+strParser(coeffVar,variable)+'1/1+('+coeffVar+')^2'
     
-def diffArcsine(function,variable):
+def diffArcsin(function,variable):
     [coeff,coeffVar] = function.split('arcsin(',1)
     if ')' in coeffVar:
         coeffVar.replace(')','')
