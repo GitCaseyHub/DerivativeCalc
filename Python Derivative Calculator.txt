@@ -7,15 +7,11 @@ def polyRule(function,variable):
         return function.split(variable)[0] if len(function)!=1 else '1'
     
     else:
-        print('im here')
         [coefficient,power] = function.split('^')
         if '(' in power or ')' in power:
             power=power.replace('(','')
             power=power.replace(')','')
             
-        print('coeff: '+coefficient)
-        print('power: '+power)
-
         coefficient = 1 if coefficient[:-1] == '' else coefficient[:-1]
         new_power = "^"+str(float(power)-1) if float(power)-1 !=1 else ""
         return '('+power+variable+new_power+')' if coefficient is "" else '('+str(float(coefficient)*float(power))+variable+new_power+')'
@@ -276,7 +272,6 @@ def performTermCutting(function,variable):
                 elif ('[' in outer and ']' in outer) or ('[' not in outer and ']' not in outer):
                     terms.append(outer)
                     diffedTerms.append(strParser(outer,variable))
-                    print(outer)
                     counter=1
                     [outer,inner]=[inner,'']
                     
@@ -289,7 +284,6 @@ def performTermCutting(function,variable):
                     
                 elif ('[' in outer and ']' in outer) or ('[' not in outer and ']' not in outer):
                     terms.append(outer)
-                    print(outer)
                     diffedTerms.append(strParser(outer,variable))
                     counter=1
                     [outer,inner] = [inner,'']
