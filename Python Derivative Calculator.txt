@@ -53,6 +53,15 @@ def diffArctan(function,variable):
     if ')' in coeffVar:
         coeffVar.replace(')','')
     return coeff+strParser(coeffVar,variable)+'1/1+('+coeffVar+')^2'
+    
+def diffArcsine(function,variable):
+    [coeff,coeffVar] = function.split('arcsin(')
+    if ')' in coeffVar:
+        coeffVar.replace(')','')
+    return coeff+strParser(coeffVar,variable) + '1/sqrt(1-('+coeffVar+')^2)'
+    
+def diffArccos(function,variable):
+    return '(-1)'+diffArcsine(function,variable)
 
 # Will be the final thing to implement; need to figure out how to find individual terms
 def diffMultiTerm(function,variable):
@@ -123,6 +132,12 @@ def strParser(term,variable):
     
     elif lowestTerm=='arctan':
         return diffArctan(term,variable)
+        
+    elif lowestTerm=='arcsin':
+        return diffArcsin(term,variable)
+        
+    elif lowestTerm=='arccos':
+        return diffArccos(term,variable)
     
     elif lowestTerm=='tan':
         inside = term.split('tan(')[1][:-1]
@@ -154,7 +169,7 @@ def strParser(term,variable):
     elif '/' in term:
         return quotientRule(term,variable)
     
-    elif lowestTerm==variable+'^':
+    elif lowestTerm==variable+'^' or lowestTerm==variable:
         return polyRule(term,variable)
     
     else:
@@ -163,7 +178,7 @@ def strParser(term,variable):
 # Checks for the ordering of the chain; then, uses recurrsion to keep differentiating until the chain is complete
 def chainRule(term,variable):
     # Checks for Outer most item for chain rule
-    types=['cos','sin','tan','exp','csc','cot','sec','ln','arctan',variable+'^']
+    types=['cos','sin','tan','exp','csc','cot','sec','ln','arctan','arccos','arcsin',variable+'^',variable]
     lowNum=10000
     currentLowest=''
     for typ in types:
