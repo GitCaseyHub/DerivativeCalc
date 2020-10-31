@@ -18,12 +18,12 @@ def polyRule(function,variable):
     
 # Differentiate Cosine Function
 def diffCosine(function,variable):
-    [coeff,inside] = function.split('cos(')
+    [coeff,inside] = function.split('cos(',1)
     return '(-'+coeff+'sin('+inside+strParser(inside,variable)+')' if strParser(inside,variable) != '1' else '(-'+coeff+'sin('+inside+')'
 
 # Differentiate Sine Function
 def diffSine(function,variable):
-    [coeff,inside] = function.split('sin(')
+    [coeff,inside] = function.split('sin(',1)
     return coeff+'cos('+inside+strParser(inside,variable) if strParser(inside,variable)!='1' else coeff+'cos('+inside
     
 # Differentiates a Constant (for consistency)
@@ -37,45 +37,45 @@ def cleanup(function,variable):
 
 # Differentiates General Exponential Function
 def diffExponential(function,variable):
-    [coeff,coeffVar] = function.split('exp')
+    [coeff,coeffVar] = function.split('exp',1)
     return function+strParser(coeffVar[1:-1],variable)
 
 def diffNaturalLog(function,variable):
-    [coeff,coeffVar] = function.split('ln(')
+    [coeff,coeffVar] = function.split('ln(',1)
     return coeff+strParser(coeffVar,variable)+'/'+coeffVar
 
 def diffArctan(function,variable):
-    [coeff,coeffVar] = function.split('arctan(')
+    [coeff,coeffVar] = function.split('arctan(',1)
     if ')' in coeffVar:
         coeffVar.replace(')','')
     return coeff+strParser(coeffVar,variable)+'1/1+('+coeffVar+')^2'
     
 def diffArcsine(function,variable):
-    [coeff,coeffVar] = function.split('arcsin(')
+    [coeff,coeffVar] = function.split('arcsin(',1)
     if ')' in coeffVar:
         coeffVar.replace(')','')
     return coeff+strParser(coeffVar,variable) + '1/sqrt(1-('+coeffVar+')^2)'
     
 def diffArccos(function,variable):
-    [coeff,coeffVar] = function.split('arccos(')
+    [coeff,coeffVar] = function.split('arccos(',1)
     if ')' in coeffVar:
         coeffVar.replace(')','')
     return '(-1)'+coeff+strParser(coeffVar,variable) + '1/sqrt(1-('+coeffVar+')^2)'
     
 def diffArccot(function,variable):
-    [coeff,coeffVar] = function.split('arccot(')
+    [coeff,coeffVar] = function.split('arccot(',1)
     if ')' in coeffVar:
         coeffVar.replace(')','')
     return '(-1)'+coeff+strParser(coeffVar,variable)+'1/1+('+coeffVar+')^2'
 
 def diffArcsec(function,variable):
-    [coeff,coeffVar] = function.split('arcsec(')
+    [coeff,coeffVar] = function.split('arcsec(',1)
     if ')' in coeffVar:
         coeffVar.replace(')','')
     return coeff+strParser(coeffVar,variable) + '1/|'+coeffVar+'|sqrt(('+coeffVar+')^2+1)'
     
 def diffArccsc(function,variable):
-    [coeff,coeffVar] = function.split('arccsc(')
+    [coeff,coeffVar] = function.split('arccsc(',1)
     if ')' in coeffVar:
         coeffVar.replace(')','')
     return '(-1)'+coeff+strParser(coeffVar,variable) + '1/|'+coeffVar+'|sqrt(('+coeffVar+')^2+1)'
@@ -162,7 +162,7 @@ def strParser(term,variable):
         return quotientRule('(sin('+inside+'))/(cos('+inside+'))',variable)
     
     elif lowestTerm=='arccot':
-        return diffArctan(term,variable)
+        return diffArccot(term,variable)
     
     elif lowestTerm=='arccsc':
         return diffArccsc(term,variable)
