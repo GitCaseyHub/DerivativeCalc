@@ -39,6 +39,13 @@ def cleanup(function):
         if holder in function:
             function = function.replace(holder,'')
             
+    if '+0' in function or '-0' in function:
+        function=function.replace('+0','')
+        function=function.replace('-0','')
+        
+    if '(1)' in function:
+        function=function.replace('(1)','')
+            
     return function
 
 # Differentiates General Exponential Function
@@ -323,6 +330,6 @@ def recursiveAsk():
         recursiveAsk()
         
     else:
-        print('(d/dx)('+diffedFunction+') = '+performTermCutting(diffedFunction,'x'))
+        print('(d/dx)('+diffedFunction+') = '+cleanup(performTermCutting(diffedFunction,'x')))
         print('\n')
         recursiveAsk()
