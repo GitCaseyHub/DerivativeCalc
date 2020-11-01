@@ -1,5 +1,4 @@
 #Issue with mixed terms and further operations (i.e. [x+1]^(2) + 2 is bad, but each individual term is good)
-
 # Program to perform general differentiation
 
 # Differentiates Single Polynomial Term
@@ -12,6 +11,9 @@ def polyRule(function,variable):
         if '(' in power or ')' in power:
             power=power.replace('(','')
             power=power.replace(')','')
+        elif '<' in power or '>' in power:
+            power=power.replace('<','')
+            power = power.replace('>','')
             
         coefficient = 1 if coefficient[:-1] == '' else coefficient[:-1]
         new_power = "^"+str(float(power)-1) if float(power)-1 !=1 else ""
@@ -20,7 +22,7 @@ def polyRule(function,variable):
 # Differentiate Cosine Function
 def diffCosine(function,variable):
     [coeff,inside] = function.split('cos(',1)
-    return '(-'+coeff+'sin('+inside+strParser(inside,variable)+')' if strParser(inside,variable) != '1' else '(-'+coeff+'sin('+inside+')'
+    return '-'+coeff+'sin('+inside+strParser(inside,variable) if strParser(inside,variable) != '1' else '-'+coeff+'sin('+inside+')'
 
 # Differentiate Sine Function
 def diffSine(function,variable):
@@ -31,10 +33,13 @@ def diffSine(function,variable):
 def diffConstant(number):
     return '0'
 
-# Run cleanup for polynomial functions to make more mathematical sense
-def cleanup(function,variable):
-    [coeffVar,power] = function.split('^')
-    return function if float(power)!=0 else coeffVar.split(variable)[0]
+def cleanup(function):
+    checkers = ['<','>','[',']']
+    for holder in checkers:
+        if holder in function:
+            function = function.replace(holder,'')
+            
+    return function
 
 # Differentiates General Exponential Function
 def diffExponential(function,variable):
@@ -233,18 +238,20 @@ def productRule(function,variable):
     elif '>*<' in function:
         [pieceOne,pieceTwo] = function.split('>*<',1)
 
-    return strParser(pieceOne,variable)+pieceTwo+' + '+pieceOne+strParser(pieceTwo,variable)
+    return cleanup(strParser(pieceOne,variable)+pieceTwo+' + '+pieceOne+strParser(pieceTwo,variable))
 
 
 def quotientRule(function,variable):
+    returnStatement=''
     if '/' in function and '>/<' not in function:
         [numer,denom] = function.split('/',1)
-        return '(('+denom+strParser(numer,variable)+' - '+numer+strParser(denom,variable)+'/'+denom+')^2)'
+        returnStatement= '('+denom+strParser(numer,variable)+' - '+numer+strParser(denom,variable)+'/'+denom+')^2'
         
     elif '>/<' in function:
         [numer,denom] = function.split('>/<',1)
-        return '(('+denom+strParser(numer[1:],variable)+' - '+numer+strParser(denom[:-1],variable)+')/('+denom[:-1]+')^2)'
+        returnStatement= '('+denom+strParser(numer[1:],variable)+' - '+numer+strParser(denom[:-1],variable)+')/('+denom[:-1]+')^2'
     
+    return cleanup(returnStatement)
     
 # Differentiates a funciton raised to a power
 def exponentDiffRule(function,variable):
