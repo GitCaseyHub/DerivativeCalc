@@ -25,6 +25,7 @@ def polyRule(function,variable):
 # Differentiate Cosine Function
 def diffCosine(function,variable):
     [coeff,inside] = function.split('cos(',1)
+    inside=inside[:-1]
     return '-'+coeff+'sin('+inside+strParser(inside,variable) if strParser(inside,variable) != '1' else '-'+coeff+'sin('+inside+')'
 
 # Differentiate Sine Function
@@ -38,10 +39,10 @@ def diffConstant(number):
 
 # Performs some cleanup of the results of differentiation
 def cleanup(function):
-    checkers = ['<','>','[',']']
-    for holder in checkers:
-        if holder in function:
-            function = function.replace(holder,'')
+   # checkers = ['<','>','[',']']
+   # for holder in checkers:
+   #     if holder in function:
+    #        function = function.replace(holder,'')
 
     if '+0' in function or '-0' in function:
         function=function.replace('+0','')
@@ -50,6 +51,15 @@ def cleanup(function):
     if '^(1.0)' in function or '^(1)' in function:
         function=function.replace('^(1.0)','')
         function=function.replace('^(1)','')
+        
+    if ')1' in function:
+        function=function.replace(')1',')')
+        
+    types=['cos','sin','tan','exp','csc','cot','sec','ln','arctan','arccos','arcsin','arccot','arcsec','arccsc','log_','x^','x']
+    for typ in types:
+        if '1'+typ in function or typ+'1' in function:
+            function=function.replace('1'+typ,typ)
+            function=function.replace(typ+'1',typ)
 
     return function
 
@@ -189,7 +199,7 @@ def strParser(term,variable):
     elif lowestTerm=='tan':
         inside = term.split('tan(')[1][:-1]
         outside = term.split('tan')[0]
-        return quotientRule('(sin('+inside+'))/(cos('+inside+'))',variable)
+        return quotientRule('<sin('+inside+')>/<cos('+inside+')>',variable)
 
     elif lowestTerm=='arccot':
         return diffArccot(term,variable)
@@ -211,7 +221,7 @@ def strParser(term,variable):
     elif lowestTerm=='cot':
         inside = term.split('cot(')[1][:-1]
         outside = term.split('cot')[0]
-        return quotientRule('(cos('+inside+'))/(sin('+inside+'))',variable)
+        return quotientRule('<cos('+inside+')>/<sin('+inside+')>',variable)
 
     elif lowestTerm=='exp':
         return diffExponential(term,variable)
@@ -254,12 +264,14 @@ def chainRule(term,variable):
 # Differentiates products of functions
 def productRule(function,variable):
     [pieceOne,pieceTwo] = function.split('>*<',1)
-    return strParser(pieceOne,variable)+pieceTwo+' + '+pieceOne+strParser(pieceTwo,variable)
+    [pieceOne,pieceTwo]= [pieceOne[1:],pieceTwo[:-1]]
+    return '('+strParser(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+strParser(pieceTwo,variable)+')'
 
 # Differentiates quotients of functions
 def quotientRule(function,variable):
     [numer,denom] = function.split('>/<',1)
-    return '('+denom+strParser(numer,variable)+' - '+numer+strParser(denom,variable)+')/('+denom+')^2'
+    [numer,denom] = [numer[1:],denom[:-1]]
+    return '[('+denom+')('+strParser(numer,variable)+') - ('+numer+')('+strParser(denom,variable)+')]/('+denom+')^2'
 
 # Differentiates a funciton raised to a power
 def exponentDiffRule(function,variable):
@@ -340,6 +352,6 @@ def recursiveAsk():
         recursiveAsk()
 
     else:
-        print('(d/dx)('+diffedFunction+') = '+performTermCutting(diffedFunction,'x'))
+        print('(d/dx)('+diffedFunction+') = '+cleanup(performTermCutting(diffedFunction,'x')))
         print('\n')
         recursiveAsk()
