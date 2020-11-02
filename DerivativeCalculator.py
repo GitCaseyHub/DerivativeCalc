@@ -47,9 +47,6 @@ def cleanup(function):
         function=function.replace('+0','')
         function=function.replace('-0','')
 
-    if '(1)' in function:
-        function=function.replace('(1)','')
-
     if '^(1.0)' in function or '^(1)' in function:
         function=function.replace('^(1.0)','')
         function=function.replace('^(1)','')
@@ -65,6 +62,14 @@ def diffExponential(function,variable):
 def diffNaturalLog(function,variable):
     [coeff,coeffVar] = function.split('ln(',1)
     return coeff+strParser(coeffVar,variable)+'/'+coeffVar
+
+def diffLog(function,variable):
+    [coeff,coeffVar] = function.split('log_',1)
+    [base,argument] = coeffVar.split('(',1)
+    print(base)
+    print(argument)
+    print(coeff)
+    return coeff+'('+strParser(argument[:-1],variable)+')/(ln('+base+')'+argument
 
 # Differentiates Arctangent functions
 def diffArctan(function,variable):
@@ -216,6 +221,9 @@ def strParser(term,variable):
 
     elif lowestTerm=='ln':
         return diffNaturalLog(term,variable)
+    
+    elif lowestTerm=='log_':
+        return diffLog(term,variable)
 
     elif '*' in term:
         return productRule(term,variable)
@@ -232,7 +240,7 @@ def strParser(term,variable):
 # Checks for the ordering of the chain; then, uses recurrsion to keep differentiating until the chain is complete
 def chainRule(term,variable):
     # Checks for Outer most item for chain rule
-    types=['cos','sin','tan','exp','csc','cot','sec','ln','arctan','arccos','arcsin','arccot','arcsec','arccsc',variable+'^',variable]
+    types=['cos','sin','tan','exp','csc','cot','sec','ln','arctan','arccos','arcsin','arccot','arcsec','arccsc','log_',variable+'^',variable]
     lowNum=10000
     currentLowest=''
     for typ in types:
