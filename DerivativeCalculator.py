@@ -26,12 +26,37 @@ def polyRule(function,variable):
 def diffCosine(function,variable):
     [coeff,inside] = function.split('cos(',1)
     inside=inside[:-1]
-    return '-'+coeff+'sin('+inside+strParser(inside,variable) if strParser(inside,variable) != '1' else '-'+coeff+'sin('+inside+')'
+    return '-'+coeff+'sin('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable) != '1' else '-'+coeff+'sin('+inside+')'
 
 # Differentiate Sine Function
 def diffSine(function,variable):
     [coeff,inside] = function.split('sin(',1)
-    return coeff+'cos('+inside+strParser(inside,variable) if strParser(inside,variable)!='1' else coeff+'cos('+inside
+    inside=inside[:-1]
+    return coeff+'cos('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else coeff+'cos('+inside+')'
+
+# Differentiates Tangent Function
+def diffTan(function,variable):
+    [coeff,inside] = function.split('tan(',1)
+    inside=inside[:-1]
+    return coeff+'[sec('+inside+')]^(2)('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else coeff+'[sec('+inside+')]^(2)'
+
+# Differentiates Secant Function
+def diffCsc(function,variable):
+    [coeff,inside] = function.split('csc(',1)
+    inside=inside[:-1]
+    return '-'+coeff+'csc('+inside+')cot('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else '-'+coeff+'csc('+inside+')cot('+inside+')'
+
+# Differentiates Cosecant Function
+def diffSec(function,variable):
+    [coeff,inside] = function.split('sec(',1)
+    inside=inside[:-1]
+    return coeff+'sec('+inside+')tan('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else coeff+'sec('+inside+')tan('+inside+')'
+
+# Differentiates Cotangent Function
+def diffCot(function,variable):
+    [coeff,inside] = function.split('cot(',1)
+    inside=inside[:-1]
+    return '-'+coeff+'[csc('+inside+')]^(2)('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else '-'+coeff+'[csc('+inside+')]^(2)'
 
 # Differentiates a Constant (for consistency)
 def diffConstant(number):
@@ -39,10 +64,9 @@ def diffConstant(number):
 
 # Performs some cleanup of the results of differentiation
 def cleanup(function):
-   # checkers = ['<','>','[',']']
-   # for holder in checkers:
-   #     if holder in function:
-    #        function = function.replace(holder,'')
+    for holder in ['<','>','[',']']:
+        if holder in function:
+            function = function.replace(holder,'')
 
     if '+0' in function or '-0' in function:
         function=function.replace('+0','')
@@ -168,16 +192,23 @@ def diffMultiTerm(function,variable):
 
 # Parses the input to determine how to differentiate the term
 def strParser(term,variable):
+    if '(0)' in term:
+        term='0'
+        
     lowestTerm = chainRule(term,variable)
-
-    if '>*<' in term:
-        return productRule(term,variable)
-
-    elif '>/<' in term:
-        return quotientRule(term,variable)
-
-    elif lowestTerm==']^':
-        return exponentDiffRule(term,variable)
+    if lowestTerm=='<':
+        if '>*<' in term and '>/<' not in term:
+            return productRule(term,variable)
+        
+        elif '>/<' in term and '>*<' not in term:
+            return quotientRule(term,variable)
+        
+        elif '>/<' in term and '>*<' in term:
+            if term.find('/')>term.find('*'):
+                return quotientRule(term,variable)
+            
+            else:
+                return productRule(term,variable)
 
     elif lowestTerm==']':
         return performTermCutting(term,variable)
@@ -201,9 +232,7 @@ def strParser(term,variable):
         return diffArccos(term,variable)
 
     elif lowestTerm=='tan':
-        inside = term.split('tan(')[1][:-1]
-        outside = term.split('tan')[0]
-        return quotientRule('<sin('+inside+')>/<cos('+inside+')>',variable)
+        return diffTan(term,variable)
 
     elif lowestTerm=='arccot':
         return diffArccot(term,variable)
@@ -215,17 +244,13 @@ def strParser(term,variable):
         return diffArcsec(term,variable)
 
     elif lowestTerm=='sec':
-        inside = term.split('sec(')[1][:-1]
-        return quotientRule('1/cos('+inside+')',variable)
+        return diffSec(term,variable)
 
     elif lowestTerm=='csc':
-        inside = term.split('csc(')[1][:-1]
-        return quotientRule('1/sin('+inside+')',variable)
+        return diffCsc(term,variable)
 
     elif lowestTerm=='cot':
-        inside = term.split('cot(')[1][:-1]
-        outside = term.split('cot')[0]
-        return quotientRule('<cos('+inside+')>/<sin('+inside+')>',variable)
+        return diffCot(term,variable)
 
     elif lowestTerm=='exp':
         return diffExponential(term,variable)
@@ -245,7 +270,7 @@ def strParser(term,variable):
 # Checks for the ordering of the chain; then, uses recurrsion to keep differentiating until the chain is complete
 def chainRule(term,variable):
     # Checks for Outer most item for chain rule
-    types=['cos','sin','tan','exp','csc','cot','sec','ln','arctan','arccos','arcsin','arccot','arcsec','arccsc','log_',variable+'^',variable]
+    types=['<','cos','sin','tan','exp','csc','cot','sec','ln','arctan','arccos','arcsin','arccot','arcsec','arccsc','log_',variable+'^',variable]
     lowNum=10000
     currentLowest=''
     for typ in types:
