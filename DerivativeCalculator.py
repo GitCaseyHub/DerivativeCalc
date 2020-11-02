@@ -3,7 +3,7 @@
 # Differentiations functions of the form: ax^(f(x))
 def polyRule(function,variable):
     if '^' not in function:
-        return function.split(variable)[0] if len(function)!=1 else '1'
+        return '1'
 
     else:
         [coefficient,power] = function.split('^')
@@ -66,10 +66,7 @@ def diffNaturalLog(function,variable):
 def diffLog(function,variable):
     [coeff,coeffVar] = function.split('log_',1)
     [base,argument] = coeffVar.split('(',1)
-    print(base)
-    print(argument)
-    print(coeff)
-    return coeff+'('+strParser(argument[:-1],variable)+')/(ln('+base+')'+argument
+    return coeff+'('+strParser(argument,variable)+')/(ln('+base+')'+argument
 
 # Differentiates Arctangent functions
 def diffArctan(function,variable):
@@ -225,12 +222,6 @@ def strParser(term,variable):
     elif lowestTerm=='log_':
         return diffLog(term,variable)
 
-    elif '*' in term:
-        return productRule(term,variable)
-
-    elif '/' in term:
-        return quotientRule(term,variable)
-
     elif lowestTerm==variable+'^' or lowestTerm==variable:
         return polyRule(term,variable)
 
@@ -262,27 +253,13 @@ def chainRule(term,variable):
 
 # Differentiates products of functions
 def productRule(function,variable):
-    if '*' in function and '>*<' not in function:
-        [pieceOne,pieceTwo] = function.split('*',1)
-
-
-    elif '>*<' in function:
-        [pieceOne,pieceTwo] = function.split('>*<',1)
-
+    [pieceOne,pieceTwo] = function.split('>*<',1)
     return strParser(pieceOne,variable)+pieceTwo+' + '+pieceOne+strParser(pieceTwo,variable)
 
 # Differentiates quotients of functions
 def quotientRule(function,variable):
-    returnStatement=''
-    if '/' in function and '>/<' not in function:
-        [numer,denom] = function.split('/',1)
-        returnStatement= '('+denom+strParser(numer,variable)+' - '+numer+strParser(denom,variable)+'/'+denom+')^2'
-
-    elif '>/<' in function:
-        [numer,denom] = function.split('>/<',1)
-        returnStatement= '('+denom+strParser(numer[1:],variable)+' - '+numer+strParser(denom[:-1],variable)+')/('+denom[:-1]+')^2'
-
-    return cleanup(returnStatement)
+    [numer,denom] = function.split('>/<',1)
+    return '('+denom+strParser(numer,variable)+' - '+numer+strParser(denom,variable)+')/('+denom+')^2'
 
 # Differentiates a funciton raised to a power
 def exponentDiffRule(function,variable):
@@ -363,6 +340,6 @@ def recursiveAsk():
         recursiveAsk()
 
     else:
-        print('(d/dx)('+diffedFunction+') = '+cleanup(performTermCutting(diffedFunction,'x')))
+        print('(d/dx)('+diffedFunction+') = '+performTermCutting(diffedFunction,'x'))
         print('\n')
         recursiveAsk()
