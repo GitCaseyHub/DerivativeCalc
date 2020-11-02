@@ -55,6 +55,10 @@ def cleanup(function):
     if ')1' in function:
         function=function.replace(')1',')')
         
+    if ')(1)' in function or '(1)(' in function:
+        function=function.replace(')(1)',')')
+        function=function.replace('(1)(','(')
+        
     types=['cos','sin','tan','exp','csc','cot','sec','ln','arctan','arccos','arcsin','arccot','arcsec','arccsc','log_','x^','x']
     for typ in types:
         if '1'+typ in function or typ+'1' in function:
