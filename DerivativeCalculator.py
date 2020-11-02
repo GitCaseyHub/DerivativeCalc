@@ -1,4 +1,6 @@
 # Program to perform general differentiation
+
+# Differentiations functions of the form: ax^(f(x))
 def polyRule(function,variable):
     if '^' not in function:
         return function.split(variable)[0] if len(function)!=1 else '1'
@@ -34,6 +36,7 @@ def diffSine(function,variable):
 def diffConstant(number):
     return '0'
 
+# Performs some cleanup of the results of differentiation
 def cleanup(function):
     checkers = ['<','>','[',']']
     for holder in checkers:
@@ -58,47 +61,54 @@ def diffExponential(function,variable):
     [coeff,coeffVar] = function.split('exp',1)
     return function+strParser(coeffVar[1:-1],variable)
 
+# Differentiates Natural Log functions
 def diffNaturalLog(function,variable):
     [coeff,coeffVar] = function.split('ln(',1)
     return coeff+strParser(coeffVar,variable)+'/'+coeffVar
 
+# Differentiates Arctangent functions
 def diffArctan(function,variable):
     [coeff,coeffVar] = function.split('arctan(',1)
     if ')' in coeffVar:
         coeffVar.replace(')','')
     return coeff+strParser(coeffVar,variable)+'1/1+('+coeffVar+')^2'
 
+# Differentiates Arcsine functions
 def diffArcsin(function,variable):
     [coeff,coeffVar] = function.split('arcsin(',1)
     if ')' in coeffVar:
         coeffVar.replace(')','')
     return coeff+strParser(coeffVar,variable) + '1/sqrt(1-('+coeffVar+')^2)'
 
+# Differentiations Arccosine functions
 def diffArccos(function,variable):
     [coeff,coeffVar] = function.split('arccos(',1)
     if ')' in coeffVar:
         coeffVar.replace(')','')
     return '(-1)'+coeff+strParser(coeffVar,variable) + '1/sqrt(1-('+coeffVar+')^2)'
 
+# Differentiates Arccotangent functions
 def diffArccot(function,variable):
     [coeff,coeffVar] = function.split('arccot(',1)
     if ')' in coeffVar:
         coeffVar.replace(')','')
     return '(-1)'+coeff+strParser(coeffVar,variable)+'1/1+('+coeffVar+')^2'
 
+# Differentiates arcsecant functions
 def diffArcsec(function,variable):
     [coeff,coeffVar] = function.split('arcsec(',1)
     if ')' in coeffVar:
         coeffVar.replace(')','')
     return coeff+strParser(coeffVar,variable) + '1/|'+coeffVar+'|sqrt(('+coeffVar+')^2+1)'
 
+# Differentiates Arccosecant functions
 def diffArccsc(function,variable):
     [coeff,coeffVar] = function.split('arccsc(',1)
     if ')' in coeffVar:
         coeffVar.replace(')','')
     return '(-1)'+coeff+strParser(coeffVar,variable) + '1/|'+coeffVar+'|sqrt(('+coeffVar+')^2+1)'
 
-# Will be the final thing to implement; need to figure out how to find individual terms
+# Differentiates functions that are separated by + and - operators
 def diffMultiTerm(function,variable):
     terms = []
     diffedTerms = []
@@ -242,6 +252,7 @@ def chainRule(term,variable):
             currentLowest=']^'
     return currentLowest
 
+# Differentiates products of functions
 def productRule(function,variable):
     if '*' in function and '>*<' not in function:
         [pieceOne,pieceTwo] = function.split('*',1)
@@ -252,7 +263,7 @@ def productRule(function,variable):
 
     return strParser(pieceOne,variable)+pieceTwo+' + '+pieceOne+strParser(pieceTwo,variable)
 
-
+# Differentiates quotients of functions
 def quotientRule(function,variable):
     returnStatement=''
     if '/' in function and '>/<' not in function:
@@ -277,6 +288,7 @@ def exponentDiffRule(function,variable):
     except:
         return function+productRule('<ln('+inner+')>*<'+power+'>','x')
 
+# Appropriately cuts + and - operators from terms so that terms parititioned by [ ] are left alone
 def performTermCutting(function,variable):
     terms=[]
     diffedTerms=[]
@@ -324,11 +336,13 @@ def performTermCutting(function,variable):
     else:
         return strParser(function,variable)
 
+# The 'UI' function for people to input functions to be differentiated
 def performTotalDifferentiation():
     print('Type \'stop\' if you don\'t want to continue differentiating. Type \'help\' for how to use program.')
     print('\n')
     recursiveAsk()
 
+# Just a way for people to continuously ask the program to differentiate different functions, as well as a way for the person to ask for help/quit out
 def recursiveAsk():
     diffedFunction = input('Input the function you\'d like to be differentiated: ')
 
