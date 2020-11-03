@@ -3,7 +3,11 @@
 # Differentiations functions of the form: ax^(f(x))
 def polyRule(function,variable):
     if '^' not in function:
-        return function[:-1] if function[:-1] !='' else '1'
+        returnVal = function[:-1] if function[:-1] !='' else '1'
+        if returnVal=='[' or returnVal==']' or returnVal=='(' or returnVal==')':
+            returnVal=1
+            
+        return returnVal
 
     else:
         [coefficient,power] = function.split('^')
@@ -26,37 +30,55 @@ def polyRule(function,variable):
 def diffCosine(function,variable):
     [coeff,inside] = function.split('cos(',1)
     inside=inside[:-1]
-    return '-'+coeff+'sin('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable) != '1' else '-'+coeff+'sin('+inside+')'
+    if '+' or '-' in inside:
+        return '-'+coeff+'sin('+inside+')('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable) != '1' else '-'+coeff+'sin('+inside+')'
+    else:
+        return '-'+coeff+'sin('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable) != '1' else '-'+coeff+'sin('+inside+')'
 
 # Differentiate Sine Function
 def diffSine(function,variable):
     [coeff,inside] = function.split('sin(',1)
     inside=inside[:-1]
-    return coeff+'cos('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else coeff+'cos('+inside+')'
+    if '+' or '-' in inside:
+        return coeff+'cos('+inside+')('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable)!='1' else coeff+'cos('+inside+')'
+    else:
+        return coeff+'cos('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else coeff+'cos('+inside+')'
 
 # Differentiates Tangent Function
 def diffTan(function,variable):
     [coeff,inside] = function.split('tan(',1)
     inside=inside[:-1]
-    return coeff+'[sec('+inside+')]^(2)('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else coeff+'[sec('+inside+')]^(2)'
+    if '+' or '-' in inside:
+         return coeff+'[sec('+inside+')]^(2)('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable)!='1' else coeff+'[sec('+inside+')]^(2)'
+    else:
+        return coeff+'[sec('+inside+')]^(2)('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else coeff+'[sec('+inside+')]^(2)'
 
 # Differentiates Secant Function
 def diffCsc(function,variable):
     [coeff,inside] = function.split('csc(',1)
     inside=inside[:-1]
-    return '-'+coeff+'csc('+inside+')cot('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else '-'+coeff+'csc('+inside+')cot('+inside+')'
+    if '+' or '-' in inside:
+        return '-'+coeff+'csc('+inside+')cot('+inside+')('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable)!='1' else '-'+coeff+'csc('+inside+')cot('+inside+')'
+    else:
+        return '-'+coeff+'csc('+inside+')cot('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else '-'+coeff+'csc('+inside+')cot('+inside+')'
 
 # Differentiates Cosecant Function
 def diffSec(function,variable):
     [coeff,inside] = function.split('sec(',1)
     inside=inside[:-1]
-    return coeff+'sec('+inside+')tan('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else coeff+'sec('+inside+')tan('+inside+')'
+    if '+' or '-' in inside:
+        return coeff+'sec('+inside+')tan('+inside+')('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable)!='1' else coeff+'sec('+inside+')tan('+inside+')'
+    else:
+        return coeff+'sec('+inside+')tan('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else coeff+'sec('+inside+')tan('+inside+')'
 
 # Differentiates Cotangent Function
 def diffCot(function,variable):
     [coeff,inside] = function.split('cot(',1)
     inside=inside[:-1]
-    return '-'+coeff+'[csc('+inside+')]^(2)('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else '-'+coeff+'[csc('+inside+')]^(2)'
+    if '+' or '-' in inside:
+        return '-'+coeff+'[csc('+inside+')]^(2)('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable)!='1' else '-'+coeff+'[csc('+inside+')]^(2)'
+    else:
+        return '-'+coeff+'[csc('+inside+')]^(2)('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else '-'+coeff+'[csc('+inside+')]^(2)'
 
 # Differentiates a Constant (for consistency)
 def diffConstant(number):
@@ -64,6 +86,10 @@ def diffConstant(number):
 
 # Performs some cleanup of the results of differentiation
 def cleanup(function):
+    if '<' in function or '>' in function:
+        function=function.replace('<','(')
+        function=function.replace('>',')')
+    
     for holder in ['<','>']:
         if holder in function:
             function = function.replace(holder,'')
@@ -98,12 +124,19 @@ def cleanup(function):
 # Differentiates General Exponential Function
 def diffExponential(function,variable):
     [coeff,coeffVar] = function.split('exp',1)
-    return function+strParser(coeffVar[1:-1],variable)
+    if '+' or '-' in coeffVar:
+        return '('+function+')('+diffMultiTerm(coeffVar[1:-1],variable)+')'
+    else:
+        return function+strParser(coeffVar[1:-1],variable)
 
 # Differentiates Natural Log functions
 def diffNaturalLog(function,variable):
     [coeff,coeffVar] = function.split('ln(',1)
-    return coeff+strParser(coeffVar,variable)+'/'+coeffVar
+    coeffVar=coeffVar[:-1]
+    if '+' or '-' in coeffVar:
+        return '('+coeff+')('+diffMultiTerm(coeffVar,variable)+')/('+coeffVar+')'
+    else:
+        return coeff+strParser(coeffVar,variable)+'/'+coeffVar
 
 def diffLog(function,variable):
     [coeff,coeffVar] = function.split('log_',1)
@@ -273,7 +306,7 @@ def strParser(term,variable):
     elif lowestTerm=='log_':
         return diffLog(term,variable)
     
-    elif '+' in term or '-' in term and '[' not in term:
+    if '+' in term or '-' in term and '[' not in term:
         return diffMultiTerm(term,variable)
 
     elif lowestTerm==variable+'^' or lowestTerm==variable:
