@@ -113,9 +113,6 @@ def cleanup(function):
         if '1'+typ in function or typ+'1' in function:
             function=function.replace('1'+typ,typ)
             function=function.replace(typ+'1',typ)
-            
-    if '()' in function:
-        function=function.replace('()','')
 
     return function
 
