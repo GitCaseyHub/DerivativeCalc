@@ -90,9 +90,8 @@ def cleanup(function):
         function=function.replace('<','(')
         function=function.replace('>',')')
     
-    for holder in ['<','>']:
-        if holder in function:
-            function = function.replace(holder,'')
+    if '()' in function:
+        function=function.replace('()','')
 
     if '+0' in function or '-0' in function:
         function=function.replace('+0','')
@@ -141,49 +140,64 @@ def diffNaturalLog(function,variable):
 def diffLog(function,variable):
     [coeff,coeffVar] = function.split('log_',1)
     [base,argument] = coeffVar.split('(',1)
-    return coeff+'('+strParser(argument,variable)+')/(ln('+base+')'+argument
+    if '+' or '-' in argument:
+        return '('+coeff+')('+diffMultiTerm(argument,variable)+')/(ln('+base+')('+argument+'))'
+    else:
+        return '('+coeff+')('+strParser(argument,variable)+')/(ln('+base+')('+argument+'))'
 
 # Differentiates Arctangent functions
 def diffArctan(function,variable):
     [coeff,coeffVar] = function.split('arctan(',1)
-    if ')' in coeffVar:
-        coeffVar.replace(')','')
-    return coeff+strParser(coeffVar,variable)+'1/1+('+coeffVar+')^2'
+    if '+' or '-' in coeffVar:
+        return '('+coeff+')('+diffMultiTerm(coeffVar[:-1],variable)+')(1/(1+('+coeffVar[:-1]+')^2)'
+
+    else:
+        return '('+coeff+')('+strParser(coeffVar[:-1],variable)+')(1/(1+('+coeffVar[:-1]+')^2)'
 
 # Differentiates Arcsine functions
 def diffArcsin(function,variable):
     [coeff,coeffVar] = function.split('arcsin(',1)
-    if ')' in coeffVar:
-        coeffVar.replace(')','')
-    return coeff+strParser(coeffVar,variable) + '1/sqrt(1-('+coeffVar+')^2)'
+    coeffVar=coeffVar[:-1]
+    if '+' or '-' in coeffVar:
+        return '('+coeff+')('+diffMultiTerm(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
+    else:
+        return '('+coeff+')('+strParser(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
 
 # Differentiations Arccosine functions
 def diffArccos(function,variable):
     [coeff,coeffVar] = function.split('arccos(',1)
-    if ')' in coeffVar:
-        coeffVar.replace(')','')
-    return '(-1)'+coeff+strParser(coeffVar,variable) + '1/sqrt(1-('+coeffVar+')^2)'
+    coeffVar=coeffVar[:-1]
+    if '+' or '-' in coeffVar:
+        return '(-1)('+coeff+')('+diffMultiTerm(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
+    else:
+        return '(-1)('+coeff+')('+strParser(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
 
 # Differentiates Arccotangent functions
 def diffArccot(function,variable):
     [coeff,coeffVar] = function.split('arccot(',1)
-    if ')' in coeffVar:
-        coeffVar.replace(')','')
-    return '(-1)'+coeff+strParser(coeffVar,variable)+'1/1+('+coeffVar+')^2'
+    coeffVar=coeffVar[:-1]
+    if '+' or '-' in coeffVar:
+        return '(-1)('+coeff+')('+diffMultiTerm(coeffVar,variable)+')(1/(1+('+coeffVar+')^2))'
+    else:
+        return '(-1)('+coeff+')('+strParser(coeffVar,variable)+')(1/(1+('+coeffVar+')^2))'
 
 # Differentiates arcsecant functions
 def diffArcsec(function,variable):
     [coeff,coeffVar] = function.split('arcsec(',1)
-    if ')' in coeffVar:
-        coeffVar.replace(')','')
-    return coeff+strParser(coeffVar,variable) + '1/|'+coeffVar+'|sqrt(('+coeffVar+')^2+1)'
+    coeffVar=coeffVar[:-1]
+    if '+' or '-' in coeffVar:
+        return '('+coeff+')('+diffMultiTerm(coeffVar,variable) + ')(1/(|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
+    else:
+        return '('+coeff+')('+strParser(coeffVar,variable) + ')(1/(|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
 
 # Differentiates Arccosecant functions
 def diffArccsc(function,variable):
     [coeff,coeffVar] = function.split('arccsc(',1)
-    if ')' in coeffVar:
-        coeffVar.replace(')','')
-    return '(-1)'+coeff+strParser(coeffVar,variable) + '1/|'+coeffVar+'|sqrt(('+coeffVar+')^2+1)'
+    coeffVar=coeffVar[:-1]
+    if '+' or '-' in coeffVar:
+        return '(-1)('+coeff+')('+diffMultiTerm(coeffVar,variable) + ')(1/|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
+    else:
+        return '(-1)('+coeff+')('+strParser(coeffVar,variable) + ')(1/|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
 
 # Differentiates functions that are separated by + and - operators
 def diffMultiTerm(function,variable):
