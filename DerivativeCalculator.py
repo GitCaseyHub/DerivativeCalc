@@ -5,7 +5,7 @@ def polyRule(function,variable):
     if '^' not in function:
         returnVal = function[:-1] if function[:-1] !='' else '1'
         if returnVal=='[' or returnVal==']' or returnVal=='(' or returnVal==')':
-            returnVal=1
+            returnVal='1'
             
         return returnVal
 
@@ -100,7 +100,6 @@ def cleanup(function):
     if '^(1.0)' in function or '^(1)' in function:
         function=function.replace('^(1.0)','')
         function=function.replace('^(1)','')
-        
         
     if ')1' in function:
         function=function.replace(')1',')')
@@ -201,7 +200,6 @@ def diffArccsc(function,variable):
 
 # Differentiates functions that are separated by + and - operators
 def diffMultiTerm(function,variable):
-    print('Function: '+function)
     [left,right]=[function,'']
     operations=[]
     terms = []
@@ -319,9 +317,6 @@ def strParser(term,variable):
     
     elif lowestTerm=='log_':
         return diffLog(term,variable)
-    
-    if '+' in term or '-' in term and '[' not in term:
-        return diffMultiTerm(term,variable)
 
     elif lowestTerm==variable+'^' or lowestTerm==variable:
         return polyRule(term,variable)
@@ -350,18 +345,39 @@ def chainRule(term,variable):
         if(term.find('[')<lowNum):
             lowNum=term.find('[')
             currentLowest=']^'
+            
     return currentLowest
 
 # Differentiates products of functions
 def productRule(function,variable):
     [pieceOne,pieceTwo] = function.split('>*<',1)
     [pieceOne,pieceTwo] = [pieceOne[1:],pieceTwo[:-1]]
-    return '('+strParser(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+strParser(pieceTwo,variable)+')'
+    if '+' or '-' in pieceOne and '+' or '-' not in pieceTwo:
+        return '('+diffMultiTerm(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+strParser(pieceTwo,variable)+')'
+
+    elif '+' or '-' not in pieceOne and '+' or '-' in pieceTwo:
+        return '('+strParser(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+diffMultiTerm(pieceTwo,variable)+')'
+
+    elif '+' or '-' in pieceOne and '+' or '-' in pieceTwo:
+        return '('+diffMultiTerm(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+diffMultiTerm(pieceTwo,variable)+')'
+
+    else:
+        return '('+strParser(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+strParser(pieceTwo,variable)+')'
 
 # Differentiates quotients of functions
 def quotientRule(function,variable):
     [numer,denom] = function.split('>/<',1)
-    return '[('+denom+')('+strParser(numer,variable)+') - ('+numer+')('+strParser(denom,variable)+')]/('+denom+')^2'
+    if '+' or '-' in numer and '+' or '-' not in denom:
+        return '[('+denom+')('+diffMultiTerm(numer,variable)+') - ('+numer+')('+strParser(denom,variable)+')]/('+denom+')^2'
+
+    elif '+' or '-' not in numer and '+' or '-' in denom:
+        return '[('+denom+')('+strParser(numer,variable)+') - ('+numer+')('+diffMultiTerm(denom,variable)+')]/('+denom+')^2'
+
+    elif '+' or '-' in numer and '+' or '-' in denom:
+        return '[('+denom+')('+diffMultiTerm(numer,variable)+') - ('+numer+')('+diffMultiTerm(denom,variable)+')]/('+denom+')^2'
+    
+    else:
+        return '[('+denom+')('+strParser(numer,variable)+') - ('+numer+')('+strParser(denom,variable)+')]/('+denom+')^2'
 
 # Differentiates a funciton raised to a power
 def exponentDiffRule(function,variable):
@@ -370,7 +386,10 @@ def exponentDiffRule(function,variable):
     [power,rest] = outer.split(')',1)
     try:
         new_power = str(float(power)-1)
-        return power+'('+inner+')^('+new_power+')'+strParser(inner,variable)
+        if '+' or '-' in inner:
+            return '('+power+')('+inner+')^('+new_power+')('+diffMultiTerm(inner,variable)+')'
+        else:
+            return '('+power+')('+inner+')^('+new_power+')('+strParser(inner,variable)+')'
 
     except:
         if outer[len(outer)-1] ==')' and outer[len(outer)-2] ==')':
