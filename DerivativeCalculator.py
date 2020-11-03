@@ -229,7 +229,10 @@ def diffMultiTerm(function,variable):
             terms.append(left)
 
         else:
-            terms.append(right)
+            if len(terms)==0:
+                terms.append(left)
+            else:
+                terms.append(right)
             left=''
  
     diffedTerms=[strParser(term,variable) for term in terms]
@@ -322,7 +325,7 @@ def strParser(term,variable):
         return polyRule(term,variable)
 
     else:
-        return diffConstant(term)
+        print(term)
 
 # Checks for the ordering of the chain; then, uses recurrsion to keep differentiating until the chain is complete
 def chainRule(term,variable):
