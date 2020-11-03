@@ -3,7 +3,7 @@
 # Differentiations functions of the form: ax^(f(x))
 def polyRule(function,variable):
     if '^' not in function:
-        return function[:-1]
+        return function[:-1] if function[:-1] !='' else '1'
 
     else:
         [coefficient,power] = function.split('^')
@@ -76,9 +76,10 @@ def cleanup(function):
         function=function.replace('^(1.0)','')
         function=function.replace('^(1)','')
         
+        
     if ')1' in function:
         function=function.replace(')1',')')
-        
+
     if ')(1)' in function or '(1)(' in function:
         function=function.replace(')(1)',')')
         function=function.replace('(1)(','(')
@@ -88,6 +89,9 @@ def cleanup(function):
         if '1'+typ in function or typ+'1' in function:
             function=function.replace('1'+typ,typ)
             function=function.replace(typ+'1',typ)
+            
+    if '()' in function:
+        function=function.replace('()','')
 
     return function
 
@@ -150,45 +154,53 @@ def diffArccsc(function,variable):
 
 # Differentiates functions that are separated by + and - operators
 def diffMultiTerm(function,variable):
+    print('Function: '+function)
+    [left,right]=[function,'']
+    operations=[]
     terms = []
-    diffedTerms = []
+    diffedTerms=[]
+    returnDiff=''
+    while left !='':
     # Check for addition subtraction
-    if '+' in function and '-' in function:
-        plusRemoval = function.split('+')
+        if '+' in left and '-' in left:
+            if left.find('+')<left.find('-'):
+                [left,right] = left.split('+',1)
+                operations.append('+')
+                terms.append(left)
+                
+            elif left.find('-')<left.find('+'):
+                [left,right] = left.split('-',1)
+                operations.append('-')
+                terms.append(left)
 
-        for term in plusRemoval:
-            if '-' in term:
-                for sub in term.split('-'):
-                    terms.append('-'+sub if sub==term.split('-')[1] else sub)
+        elif '+' in left and '-' not in left:
+            [left,right] = left.split('+',1)
+            operations.append('+')
+            terms.append(left)
 
-            else:
-                terms.append(term)
+        elif '-' in left and '+' not in left:
+            [left,right] = left.split('-',1)
+            operations.append('-')
+            terms.append(left)
 
-    elif '-' in function and '+' not in function:
-        preTerms = function.split('-')
-        for term in preTerms:
-            terms.append('-'+term if '-'+term in function else term)
-
-        for term in terms:
-            if term =='' or term=='+' or term=='-':
-                terms.remove(term)
-
-    elif '+' in function and '-' not in function:
-        preTerms = function.split('+')
-        for term in preTerms:
-            terms.append(term)
-
-    else:
-        terms = [function]
-
-    for item in terms:
-        diffedTerms.append(strParser(item,variable))
-
-    result = ""
-    for dfs in diffedTerms:
-        result=result+str(dfs)+'+'
-
-    return result[:-1]
+        else:
+            terms.append(right)
+            left=''
+ 
+    diffedTerms=[strParser(term,variable) for term in terms]
+    counter=0
+    for op in range(len(operations)):
+        if operations[counter]=='-':
+            diffedTerms[counter+1]='-'+diffedTerms[counter+1]
+        counter+=1
+        
+    for trm in diffedTerms:
+        if len(returnDiff)==0:
+            returnDiff+=trm
+        else:
+            returnDiff+='+'+trm if '-' not in trm else trm
+                           
+    return returnDiff
 
 # Parses the input to determine how to differentiate the term
 def strParser(term,variable):
@@ -215,9 +227,6 @@ def strParser(term,variable):
     
     elif lowestTerm==']^':
         return exponentDiffRule(term,variable)
-
-    elif '+' in term or '-' in term:
-        return diffMultiTerm(term,variable)
 
     elif lowestTerm=='cos':
         return diffCosine(term,variable)
@@ -263,6 +272,9 @@ def strParser(term,variable):
     
     elif lowestTerm=='log_':
         return diffLog(term,variable)
+    
+    elif '+' in term or '-' in term and '[' not in term:
+        return diffMultiTerm(term,variable)
 
     elif lowestTerm==variable+'^' or lowestTerm==variable:
         return polyRule(term,variable)
@@ -316,7 +328,6 @@ def exponentDiffRule(function,variable):
     except:
         if outer[len(outer)-1] ==')' and outer[len(outer)-2] ==')':
             outer=outer[:-1]
-        print(outer)
         return function+'('+productRule('<ln('+inner+')>*<'+outer+'>','x')+')'
 
 # Appropriately cuts + and - operators from terms so that terms parititioned by [ ] are left alone
@@ -351,6 +362,7 @@ def performTermCutting(function,variable):
                     terms.append(outer)
                     diffedTerms.append(strParser(outer,variable))
                     counter=1
+
                     [outer,inner] = [inner,'']
 
             else:
