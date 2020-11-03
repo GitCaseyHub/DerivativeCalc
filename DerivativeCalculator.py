@@ -3,7 +3,7 @@
 # Differentiations functions of the form: ax^(f(x))
 def polyRule(function,variable):
     if '^' not in function:
-        return '1'
+        return function[:-1]
 
     else:
         [coefficient,power] = function.split('^')
@@ -20,7 +20,7 @@ def polyRule(function,variable):
             return '('+power+variable+new_power+')' if coefficient is "" else '('+str(float(coefficient)*float(power))+variable+new_power+')'
     
         except:
-            return '('+function+')'+productRule('<'+power+'>*<ln('+str(coefficient)+')','x')
+            return '('+function+')('+productRule('<'+power+'>*<ln('+str(coefficient)+')','x')+')'
 
 # Differentiate Cosine Function
 def diffCosine(function,variable):
@@ -64,7 +64,7 @@ def diffConstant(number):
 
 # Performs some cleanup of the results of differentiation
 def cleanup(function):
-    for holder in ['<','>','[',']']:
+    for holder in ['<','>']:
         if holder in function:
             function = function.replace(holder,'')
 
@@ -212,6 +212,9 @@ def strParser(term,variable):
 
     elif lowestTerm==']':
         return performTermCutting(term,variable)
+    
+    elif lowestTerm==']^':
+        return exponentDiffRule(term,variable)
 
     elif '+' in term or '-' in term:
         return diffMultiTerm(term,variable)
@@ -293,13 +296,12 @@ def chainRule(term,variable):
 # Differentiates products of functions
 def productRule(function,variable):
     [pieceOne,pieceTwo] = function.split('>*<',1)
-    [pieceOne,pieceTwo]= [pieceOne[1:],pieceTwo[:-1]]
+    [pieceOne,pieceTwo] = [pieceOne[1:],pieceTwo[:-1]]
     return '('+strParser(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+strParser(pieceTwo,variable)+')'
 
 # Differentiates quotients of functions
 def quotientRule(function,variable):
     [numer,denom] = function.split('>/<',1)
-    [numer,denom] = [numer[1:],denom[:-1]]
     return '[('+denom+')('+strParser(numer,variable)+') - ('+numer+')('+strParser(denom,variable)+')]/('+denom+')^2'
 
 # Differentiates a funciton raised to a power
@@ -312,7 +314,10 @@ def exponentDiffRule(function,variable):
         return power+'('+inner+')^('+new_power+')'+strParser(inner,variable)
 
     except:
-        return function+productRule('<ln('+inner+')>*<'+power+'>','x')
+        if outer[len(outer)-1] ==')' and outer[len(outer)-2] ==')':
+            outer=outer[:-1]
+        print(outer)
+        return function+'('+productRule('<ln('+inner+')>*<'+outer+'>','x')+')'
 
 # Appropriately cuts + and - operators from terms so that terms parititioned by [ ] are left alone
 def performTermCutting(function,variable):
