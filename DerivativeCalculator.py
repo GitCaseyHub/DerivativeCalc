@@ -322,7 +322,7 @@ def strParser(term,variable):
         return polyRule(term,variable)
 
     else:
-        print(term)
+        return diffConstant(term)
 
 # Checks for the ordering of the chain; then, uses recurrsion to keep differentiating until the chain is complete
 def chainRule(term,variable):
