@@ -398,11 +398,11 @@ def exponentDiffRule(function,variable):
 
 # Appropriately cuts + and - operators from terms so that terms parititioned by [ ] are left alone
 def performTermCutting(function,variable):
-    terms=[]
-    diffedTerms=[]
     if '[' in function and ']' in function and ('+' in function or '-' in function) and (function.find('[')<function.find('+') and function.find('+')<function.find(']')) or (function.find('[')<function.find('+') and function.find('-')<function.find(']')):
         [outer,inner]=[function,'']
         counter=1
+        terms=[]
+        diffedTerms=[]
         while outer!='':
             if outer.find('+')<outer.find('-') or ('-' not in outer and '+' in outer):
                 [originalOuter,originalInner] = [outer,inner]
@@ -428,7 +428,6 @@ def performTermCutting(function,variable):
                     terms.append(outer)
                     diffedTerms.append(strParser(outer,variable))
                     counter=1
-
                     [outer,inner] = [inner,'']
 
             else:
@@ -441,10 +440,68 @@ def performTermCutting(function,variable):
         for term in diffedTerms:
             wholeDeriv+=term+'+'
         return wholeDeriv[:-1]
-
+    
+    elif '+' or '-' in function and '[' and ']' not in function:
+        [left,right]=[function,'']
+        parCounter=1
+        terms=[]
+        diffedTerms=[]
+        while left!='':
+            if function.find('+')<function.find('-') or '-' not in function and '+' in function:
+                [origLeft, origRight] = [left,right]
+                [left,right] =['+'.join(left.split('+')[:parCounter]), '+'.join(left.split('+')[parCounter:])]
+                if countLeftPar(left)!=countRightPar(right):
+                    parCounter+=1
+                    [left,right] = [origLeft,origRight]
+                    
+                elif countLeftPar(left)==countRightPar(right):
+                    terms.append(left)
+                    diffedTerms.append(strParser(left,variable))
+                    parCounter=1
+                    [left,right]=[right,'']
+            
+            elif function.find('-')<function.find('+') or '+' not in function and '-' in function:
+                [origLeft, origRight] = [left,right]
+                [left,right] =['-'.join(left.split('-')[:parCounter]), '-'.join(left.split('-')[parCounter:])]
+                if countLeftPar(left)!=countRightPar(right):
+                    parCounter+=1
+                    [left,right] = [origLeft,origRight]
+                    
+                else:
+                    terms.append(left)
+                    diffedTerms.append(strParser(left,variable))
+                    parCounter=1
+                    [left,right]=[right,'']
+            else:
+                terms.append(left)
+                diffedTerms.append(strParser(left,variable))
+                left=''
+                
+        wholeDeriv = ''
+        print(terms)
+        for term in diffedTerms:
+            wholeDeriv+=term+'+'
+        return wholeDeriv[:-1]
+    
     else:
         return strParser(function,variable)
-
+    
+def countLeftPar(function):
+    count=0
+    for char in function:
+        if char=='(':
+            count+=1
+            
+    return count
+        
+def countRightPar(function):
+    count=0
+    for char in function:
+        if char==')':
+            count+=1
+            
+    return count
+    
 # The 'UI' function for people to input functions to be differentiated
 def performTotalDifferentiation():
     print('Type \'stop\' if you don\'t want to continue differentiating. Type \'help\' for how to use program.')
