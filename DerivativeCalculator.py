@@ -31,8 +31,12 @@ def polyRule(function,variable):
 def diffCosine(function,variable):
     [coeff,inside] = function.split('cos(',1)
     inside=inside[:-1]
-    if '+' or '-' in inside and checkLowestChain(inside,variable)==True:
+    if '+' or '-' in coeffVar and '[' in coeffVar:
+        return '-'+coeff+'sin('+inside+')('+bracketBreakdown(inside,variable)+')'
+    
+    elif '+' or '-' in inside and checkLowestChain(inside,variable)==True:
         return '-'+coeff+'sin('+inside+')('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable) != '1' else '-'+coeff+'sin('+inside+')'
+    
     else:
         return '-'+coeff+'sin('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable) != '1' else '-'+coeff+'sin('+inside+')'
 
@@ -40,8 +44,12 @@ def diffCosine(function,variable):
 def diffSine(function,variable):
     [coeff,inside] = function.split('sin(',1)
     inside=inside[:-1]
-    if '+' or '-' in inside and checkLowestChain(inside,variable)==True:
+    if '+' or '-' in coeffVar and '[' in coeffVar:
+        return coeff+'cos('+inside+')('+bracketBreakdown(inside,variable)+')'
+    
+    elif '+' or '-' in inside and checkLowestChain(inside,variable)==True:
         return coeff+'cos('+inside+')('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable)!='1' else coeff+'cos('+inside+')'
+    
     else:
         return coeff+'cos('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else coeff+'cos('+inside+')'
 
@@ -49,8 +57,12 @@ def diffSine(function,variable):
 def diffTan(function,variable):
     [coeff,inside] = function.split('tan(',1)
     inside=inside[:-1]
-    if '+' or '-' in inside and checkLowestChain(inside,variable)==True:
+    if '+' or '-' in coeffVar and '[' in coeffVar:
+        return coeff+'[sec('+inside+')]^(2)('+bracketBreakdown(inside,variable)+')'
+    
+    elif '+' or '-' in inside and checkLowestChain(inside,variable)==True:
          return coeff+'[sec('+inside+')]^(2)('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable)!='1' else coeff+'[sec('+inside+')]^(2)'
+    
     else:
         return coeff+'[sec('+inside+')]^(2)('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else coeff+'[sec('+inside+')]^(2)'
 
@@ -58,8 +70,12 @@ def diffTan(function,variable):
 def diffCsc(function,variable):
     [coeff,inside] = function.split('csc(',1)
     inside=inside[:-1]
-    if '+' or '-' in inside and checkLowestChain(inside,variable)==True:
+    if '+' or '-' in coeffVar and '[' in coeffVar:
+        return '-'+coeff+'csc('+inside+')cot('+inside+')('+bracketBreakdown(inside,variable)+')'
+    
+    elif '+' or '-' in inside and checkLowestChain(inside,variable)==True:
         return '-'+coeff+'csc('+inside+')cot('+inside+')('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable)!='1' else '-'+coeff+'csc('+inside+')cot('+inside+')'
+    
     else:
         return '-'+coeff+'csc('+inside+')cot('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else '-'+coeff+'csc('+inside+')cot('+inside+')'
 
@@ -67,8 +83,12 @@ def diffCsc(function,variable):
 def diffSec(function,variable):
     [coeff,inside] = function.split('sec(',1)
     inside=inside[:-1]
-    if '+' or '-' in inside and checkLowestChain(inside,variable)==True:
+    if '+' or '-' in coeffVar and '[' in coeffVar:
+        return coeff+'sec('+inside+')tan('+inside+')('+bracketBreakdown(inside,variable)+')'
+    
+    elif '+' or '-' in inside and checkLowestChain(inside,variable)==True:
         return coeff+'sec('+inside+')tan('+inside+')('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable)!='1' else coeff+'sec('+inside+')tan('+inside+')'
+    
     else:
         return coeff+'sec('+inside+')tan('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else coeff+'sec('+inside+')tan('+inside+')'
 
@@ -76,8 +96,12 @@ def diffSec(function,variable):
 def diffCot(function,variable):
     [coeff,inside] = function.split('cot(',1)
     inside=inside[:-1]
-    if '+' or '-' in inside and checkLowestChain(inside,variable)==True:
+    if '+' or '-' in coeffVar and '[' in coeffVar:
+        return '-'+coeff+'[csc('+inside+')]^(2)('+bracketBreakdown(inside,variable)+')'
+    
+    elif '+' or '-' in inside and checkLowestChain(inside,variable)==True:
         return '-'+coeff+'[csc('+inside+')]^(2)('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable)!='1' else '-'+coeff+'[csc('+inside+')]^(2)'
+    
     else:
         return '-'+coeff+'[csc('+inside+')]^(2)('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else '-'+coeff+'[csc('+inside+')]^(2)'
 
@@ -120,8 +144,12 @@ def cleanup(function):
 # Differentiates General Exponential Function
 def diffExponential(function,variable):
     [coeff,coeffVar] = function.split('exp',1)
-    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+    if '+' or '-' in coeffVar and '[' in coeffVar:
+        return '('+function+')('+bracketBreakdown(coeffVar[1:-1],variable)+')'
+    
+    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
         return '('+function+')('+diffMultiTerm(coeffVar[1:-1],variable)+')'
+    
     else:
         return function+strParser(coeffVar[1:-1],variable)
 
@@ -129,23 +157,34 @@ def diffExponential(function,variable):
 def diffNaturalLog(function,variable):
     [coeff,coeffVar] = function.split('ln(',1)
     coeffVar=coeffVar[:-1]
-    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+    if '+' or '-' in coeffVar and '[' in coeffVar:
         return '('+coeff+')('+diffMultiTerm(coeffVar,variable)+')/('+coeffVar+')'
+
+    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+        return '('+coeff+')('+bracketBreakdown(coeffVar,variable)+')/('+coeffVar+')'
+    
     else:
         return coeff+strParser(coeffVar,variable)+'/'+coeffVar
 
 def diffLog(function,variable):
     [coeff,coeffVar] = function.split('log_',1)
     [base,argument] = coeffVar.split('(',1)
-    if '+' or '-' in argument and checkLowestChain(coeffVar,variable)==True:
+    if '+' or '-' in argument and '[' in argument:
+        return '('+coeff+')('+bracketBreakdown(argument,variable)+')/(ln('+base+')('+argument+'))'
+    
+    elif '+' or '-' in argument and checkLowestChain(coeffVar,variable)==True:
         return '('+coeff+')('+diffMultiTerm(argument,variable)+')/(ln('+base+')('+argument+'))'
+    
     else:
         return '('+coeff+')('+strParser(argument,variable)+')/(ln('+base+')('+argument+'))'
 
 # Differentiates Arctangent functions
 def diffArctan(function,variable):
     [coeff,coeffVar] = function.split('arctan(',1)
-    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+    if '+' or '-' in coeffVar and '[' in coeffVar:
+        return '('+coeff+')('+bracketBreakdown(coeffVar[:-1],variable)+')(1/(1+('+coeffVar[:-1]+')^2)'
+
+    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
         return '('+coeff+')('+diffMultiTerm(coeffVar[:-1],variable)+')(1/(1+('+coeffVar[:-1]+')^2)'
 
     else:
@@ -155,8 +194,12 @@ def diffArctan(function,variable):
 def diffArcsin(function,variable):
     [coeff,coeffVar] = function.split('arcsin(',1)
     coeffVar=coeffVar[:-1]
-    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+    if '+' or '-' in coeffVar  and '[' in coeffVar:
+        return '('+coeff+')('+bracketBreakdown(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
+
+    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
         return '('+coeff+')('+diffMultiTerm(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
+    
     else:
         return '('+coeff+')('+strParser(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
 
@@ -164,8 +207,12 @@ def diffArcsin(function,variable):
 def diffArccos(function,variable):
     [coeff,coeffVar] = function.split('arccos(',1)
     coeffVar=coeffVar[:-1]
-    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+    if '+' or '-' in coeffVar  and '[' in coeffVar:
+        return '(-1)('+coeff+')('+bracketBreakdown(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
+
+    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
         return '(-1)('+coeff+')('+diffMultiTerm(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
+    
     else:
         return '(-1)('+coeff+')('+strParser(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
 
@@ -173,8 +220,12 @@ def diffArccos(function,variable):
 def diffArccot(function,variable):
     [coeff,coeffVar] = function.split('arccot(',1)
     coeffVar=coeffVar[:-1]
-    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+    if '+' or '-' in coeffVar and '[' in coeffVar:
+        return '(-1)('+coeff+')('+bracketBreakdown(coeffVar,variable)+')(1/(1+('+coeffVar+')^2))'
+
+    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
         return '(-1)('+coeff+')('+diffMultiTerm(coeffVar,variable)+')(1/(1+('+coeffVar+')^2))'
+    
     else:
         return '(-1)('+coeff+')('+strParser(coeffVar,variable)+')(1/(1+('+coeffVar+')^2))'
 
@@ -182,8 +233,12 @@ def diffArccot(function,variable):
 def diffArcsec(function,variable):
     [coeff,coeffVar] = function.split('arcsec(',1)
     coeffVar=coeffVar[:-1]
-    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+    if '+' or '-' in coeffVar and '[' in coeffVar:
+        return '('+coeff+')('+bracketBreakdown(coeffVar,variable) + ')(1/(|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
+
+    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
         return '('+coeff+')('+diffMultiTerm(coeffVar,variable) + ')(1/(|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
+    
     else:
         return '('+coeff+')('+strParser(coeffVar,variable) + ')(1/(|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
 
@@ -191,8 +246,12 @@ def diffArcsec(function,variable):
 def diffArccsc(function,variable):
     [coeff,coeffVar] = function.split('arccsc(',1)
     coeffVar=coeffVar[:-1]
-    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+    if '+' or '-' in coeffVar and '[' in coeffVar:
+        return '(-1)('+coeff+')('+bracketBreakdown(coeffVar,variable) + ')(1/|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
+
+    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
         return '(-1)('+coeff+')('+diffMultiTerm(coeffVar,variable) + ')(1/|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
+    
     else:
         return '(-1)('+coeff+')('+strParser(coeffVar,variable) + ')(1/|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
 
@@ -232,8 +291,10 @@ def diffMultiTerm(function,variable):
             else:
                 terms.append(right)
             left=''
- 
-    diffedTerms=[strParser(term,variable) for term in terms]
+        
+    for item in terms:
+        diffedTerms.append(strParser(term,variable))
+
     counter=0
     for op in range(len(operations)):
         if operations[counter]=='-':
@@ -264,9 +325,6 @@ def strParser(term,variable):
             
             else:
                 return productRule(term,variable)
-
-    elif lowestTerm==']':
-        return bracketBreakdown(term,variable)
     
     elif lowestTerm==']^':
         return exponentDiffRule(term,variable)
@@ -323,7 +381,7 @@ def strParser(term,variable):
         return diffConstant(term)
     
     else:
-        print('Quit Horsing Around.')
+        print('I\'m not sure what this term is. Please contact me with what the term is so I can fix the issue.\nEmail: caseypersonalschooling@gmail.com')
         sys.exit()
 
 # Checks for the ordering of the chain; then, uses recurrsion to keep differentiating until the chain is complete
@@ -338,12 +396,7 @@ def chainRule(term,variable):
                 lowNum=term.find(typ)
                 currentLowest=typ
 
-    if '[' in term and ']' in term and ']^' not in term:
-        if(term.find('[')<lowNum):
-            lowNum=term.find('[')
-            currentLowest=']'
-
-    elif '[' in term and ']^' in term:
+    if '[' in term and ']^' in term:
         if(term.find('[')<lowNum):
             lowNum=term.find('[')
             currentLowest=']^'
@@ -461,7 +514,7 @@ def recursiveAsk():
         recursiveAsk()
 
     else:
-        print('(d/dx)('+diffedFunction+') = '+cleanup(performTermCutting(diffedFunction,'x')))
+        print('(d/d'+variable+')('+diffedFunction+') = '+cleanup(performTermCutting(diffedFunction,'x')))
         print('\n')
         recursiveAsk()
         
@@ -578,4 +631,12 @@ def bracketBreakdown(function,variable):
         diffedTerms.append(strParser(terms[indexManip],variable))
 
         indexManip+=1
-    return diffedTerms
+        
+    returnString = ''
+    for item in diffedTerms:
+        if returnString=='':
+            returnString+=item
+            
+        else:
+            returnString+='+'+item
+    return returnString
