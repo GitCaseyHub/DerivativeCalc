@@ -1,3 +1,4 @@
+import sys
 # Program to perform general differentiation
 # Issue with DiffMultiTerm of term separation (of course!)
 # Differentiations functions of the form: ax^(f(x))
@@ -249,9 +250,6 @@ def diffMultiTerm(function,variable):
 
 # Parses the input to determine how to differentiate the term
 def strParser(term,variable):
-    if '(0)' in term:
-        term='0'
-        
     lowestTerm = chainRule(term,variable)
     if lowestTerm=='<':
         if '>*<' in term and '>/<' not in term:
@@ -268,7 +266,7 @@ def strParser(term,variable):
                 return productRule(term,variable)
 
     elif lowestTerm==']':
-        return performTermCutting(term,variable)
+        return bracketBreakdown(term,variable)
     
     elif lowestTerm==']^':
         return exponentDiffRule(term,variable)
@@ -325,7 +323,8 @@ def strParser(term,variable):
         return diffConstant(term)
     
     else:
-        print('I don\'t know what this is.')
+        print('Quit Horsing Around.')
+        sys.exit()
 
 # Checks for the ordering of the chain; then, uses recurrsion to keep differentiating until the chain is complete
 def chainRule(term,variable):
@@ -354,7 +353,6 @@ def chainRule(term,variable):
         currentLowest='const'
     except:
         pass
-            
     return currentLowest
 
 # Differentiates products of functions
@@ -511,3 +509,73 @@ def checkLowestChain(function,variable):
         return True
     
     return True
+
+
+def bracketBreakdown(function,variable):
+    terms=[]
+    diffedTerms=[]
+    [outer,inner]=[function,'']
+    counter=1
+    while outer!='':
+        if ('[' and ']' in outer) and outer.find('[')<outer.find('+') or outer.find('[')<outer.find('-'):
+            if outer.find('+')<outer.find('-') or ('-' not in outer and '+' in outer):
+                [originalOuter,originalInner] = [outer,inner]
+                [outer,inner] = ['+'.join(outer.split('+')[:counter]), '+'.join(outer.split('+')[counter:])]
+                if '[' in outer and ']' not in outer:
+                    counter+=1
+                    [outer,inner]=[originalOuter,originalInner]
+
+                else:
+                    if '[' in outer:
+                        terms.append(outer)
+                    else:
+                        terms.append(outer)
+                    counter=1
+                    [outer,inner]=[inner,'']
+
+            elif outer.find('-')<outer.find('+') or ('+' in outer and '-' not in other):
+                [originalOuter,originalInner]=[outer,inner]
+                [outer,inner]='-'.join(outer.split('-')[:counter]), '-'.join(outer.split('-')[counter:])
+                if '[' in outer and ']' not in outer:
+                    counter+=1
+                    [outer,inner]=[originalOuter,originalInner]
+
+                else:
+                    terms.append(outer)
+                    counter=1
+                    [outer,inner]=[inner,'']
+
+            else:
+                terms.append(outer)
+                break
+                
+        elif outer.find('+') or outer.find('-') < outer.find('['):
+            if outer.find('+') < outer.find('-') or '+' in outer and '-' not in outer:
+                [outer,inner] = outer.split('+',1)
+                terms.append(outer)
+                [outer,inner] = [inner,'']
+
+            elif outer.find('-') < outer.find('+') or '-' in outer and '+' not in outer:
+                [outer,inner] = outer.split('-',1)
+                terms.append(outer)
+                [outer,inner]=[inner,'']
+
+            else:
+                terms.append(outer)
+                break
+    
+        else:
+            terms.append(inner)
+            break
+            
+    indexManip = 0
+    for item in terms:
+        terms[indexManip] = terms[indexManip].replace(' ','')
+        if '[' in terms[indexManip]:
+            terms[indexManip] = terms[indexManip].replace('[','')
+            terms[indexManip] = terms[indexManip].replace(']','')
+            
+        diffedTerms.append(strParser(terms[indexManip],variable))
+
+        indexManip+=1
+    return diffedTerms
