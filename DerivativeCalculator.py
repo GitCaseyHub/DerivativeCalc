@@ -396,112 +396,45 @@ def exponentDiffRule(function,variable):
             outer=outer[:-1]
         return function+'('+productRule('<ln('+inner+')>*<'+outer+'>','x')+')'
 
-# Appropriately cuts + and - operators from terms so that terms parititioned by [ ] are left alone
+# Cuts terms via the character, @
 def performTermCutting(function,variable):
-    if '[' in function and ']' in function and ('+' in function or '-' in function) and (function.find('[')<function.find('+') and function.find('+')<function.find(']')) or (function.find('[')<function.find('+') and function.find('-')<function.find(']')):
-        [outer,inner]=[function,'']
-        counter=1
-        terms=[]
-        diffedTerms=[]
-        while outer!='':
-            if outer.find('+')<outer.find('-') or ('-' not in outer and '+' in outer):
-                [originalOuter,originalInner] = [outer,inner]
-                [outer,inner] = ['+'.join(outer.split('+')[:counter]), '+'.join(outer.split('+')[counter:])]
-                if '[' in outer and ']' not in outer:
-                    counter+=1
-                    [outer,inner]=[originalOuter,originalInner]
-
-                elif ('[' in outer and ']' in outer) or ('[' not in outer and ']' not in outer):
-                    terms.append(outer)
-                    diffedTerms.append(strParser(outer,variable))
-                    counter=1
-                    [outer,inner]=[inner,'']
-
-            elif outer.find('-')<outer.find('+') or ('+' in outer and '-' not in other):
-                [originalOuter,originalInner]=[outer,inner]
-                [outer,inner]='-'.join(outer.split('-')[:counter]), '-'.join(outer.split('-')[counter:])
-                if '[' in outer and ']' not in outer:
-                    counter+=1
-                    [outer,inner]=[originalOuter,originalInner]
-
-                elif ('[' in outer and ']' in outer) or ('[' not in outer and ']' not in outer):
-                    terms.append(outer)
-                    diffedTerms.append(strParser(outer,variable))
-                    counter=1
-                    [outer,inner] = [inner,'']
-
-            else:
-                terms.append(outer)
-                diffedTerms.append(strParser(outer,variable))
-                outer=''
-
-        wholeDeriv = ''
-
-        for term in diffedTerms:
-            wholeDeriv+=term+'+'
-        return wholeDeriv[:-1]
+    terms = function.split('@')
+    operations = []
+    diffedTerms=[]
+    returnStatement=''
     
-    elif '+' or '-' in function and '[' and ']' not in function:
-        [left,right]=[function,'']
-        parCounter=1
-        terms=[]
-        diffedTerms=[]
-        while left!='':
-            if function.find('+')<function.find('-') or '-' not in function and '+' in function:
-                [origLeft, origRight] = [left,right]
-                [left,right] =['+'.join(left.split('+')[:parCounter]), '+'.join(left.split('+')[parCounter:])]
-                if countLeftPar(left)!=countRightPar(right):
-                    parCounter+=1
-                    [left,right] = [origLeft,origRight]
-                    
-                elif countLeftPar(left)==countRightPar(right):
-                    terms.append(left)
-                    diffedTerms.append(strParser(left,variable))
-                    parCounter=1
-                    [left,right]=[right,'']
-            
-            elif function.find('-')<function.find('+') or '+' not in function and '-' in function:
-                [origLeft, origRight] = [left,right]
-                [left,right] =['-'.join(left.split('-')[:parCounter]), '-'.join(left.split('-')[parCounter:])]
-                if countLeftPar(left)!=countRightPar(right):
-                    parCounter+=1
-                    [left,right] = [origLeft,origRight]
-                    
-                else:
-                    terms.append(left)
-                    diffedTerms.append(strParser(left,variable))
-                    parCounter=1
-                    [left,right]=[right,'']
-            else:
-                terms.append(left)
-                diffedTerms.append(strParser(left,variable))
-                left=''
-                
-        wholeDeriv = ''
-        print(terms)
-        for term in diffedTerms:
-            wholeDeriv+=term+'+'
-        return wholeDeriv[:-1]
-    
-    else:
-        return strParser(function,variable)
-    
-def countLeftPar(function):
-    count=0
-    for char in function:
-        if char=='(':
-            count+=1
-            
-    return count
+    if terms[0][0] != '+' or '-':
+        operations.append('+')
         
-def countRightPar(function):
-    count=0
-    for char in function:
-        if char==')':
-            count+=1
-            
-    return count
+    elif terms[0][0] == '-':
+        operations.append('-')
+        terms[0] = terms[0][1:]
+
+    counter=1
+    for item in terms[1:]:
+        operations.append(item[0])
+        terms[counter] = item[1:]
+        if ' ' in terms[counter]:
+            terms[counter] = terms[counter].replace(' ','')
+        counter+=1
     
+    for item in terms:
+        diffedTerms.append(strParser(item,variable))
+    
+    numCount=0
+    for item in diffedTerms:
+        if returnStatement=='':
+            if operations[0]=='-':
+                returnStatement+='-('+item+')'
+            else:
+                returnStatement+='('+item+')'
+                
+        else:
+            returnStatement+=operations[numCount]+'('+item+')'
+        numCount+=1
+    
+    return returnStatement
+
 # The 'UI' function for people to input functions to be differentiated
 def performTotalDifferentiation():
     print('Type \'stop\' if you don\'t want to continue differentiating. Type \'help\' for how to use program.')
@@ -516,7 +449,7 @@ def recursiveAsk():
         print('Goodbye')
 
     elif diffedFunction=='help':
-        print('Rules: \nIf you want to mult/div complex terms, type <term_1>*/<term_2>. For simple terms, just use term_1*/term_2.\nIf you want to raise a term to a power, type [term_1]^(power).\nIf you want to have a term have more than one addition/subtraction operation, type [term_1 + term_2+etc]')
+        print('Rules: \nIf you want to mult/div complex terms, type <term_1>*/<term_2>. For simple terms, just use term_1*/term_2.\nIf you want to raise a term to a power, type [term_1]^(power).\nIf you want to have a term have more than one addition/subtraction operation, type [term_1 + term_2+etc]*[term_3].\nAnd if you want to find the derivative of a sum of functions, type: term_1 @+ term_2 @+ term_3 etc. Use @- for subtraction.')
         print('\n')
         recursiveAsk()
 
