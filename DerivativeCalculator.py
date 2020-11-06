@@ -1,4 +1,3 @@
-import sys
 # Program to perform general differentiation
 # Issue with DiffMultiTerm of term separation (of course!)
 # Differentiations functions of the form: ax^(f(x))
@@ -29,79 +28,49 @@ def polyRule(function,variable):
 
 # Differentiate Cosine Function
 def diffCosine(function,variable):
-    [coeff,inside] = function.split('cos(',1)
-    inside=inside[:-1]
-    if '+' or '-' in coeffVar and '[' in coeffVar:
-        return '-'+coeff+'sin('+inside+')('+bracketBreakdown(inside,variable)+')'
-    
-    elif '+' or '-' in inside and checkLowestChain(inside,variable)==True:
+    [coeff,inside] = function.split('cos',1)
+    if '+' or '-' in inside and checkLowestChain(inside,variable)==True:
         return '-'+coeff+'sin('+inside+')('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable) != '1' else '-'+coeff+'sin('+inside+')'
-    
     else:
         return '-'+coeff+'sin('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable) != '1' else '-'+coeff+'sin('+inside+')'
 
 # Differentiate Sine Function
 def diffSine(function,variable):
-    [coeff,inside] = function.split('sin(',1)
-    inside=inside[:-1]
-    if '+' or '-' in coeffVar and '[' in coeffVar:
-        return coeff+'cos('+inside+')('+bracketBreakdown(inside,variable)+')'
-    
-    elif '+' or '-' in inside and checkLowestChain(inside,variable)==True:
+    [coeff,inside] = function.split('sin',1)
+    if '+' or '-' in inside and checkLowestChain(inside,variable)==True:
         return coeff+'cos('+inside+')('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable)!='1' else coeff+'cos('+inside+')'
-    
     else:
         return coeff+'cos('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else coeff+'cos('+inside+')'
 
 # Differentiates Tangent Function
 def diffTan(function,variable):
-    [coeff,inside] = function.split('tan(',1)
-    inside=inside[:-1]
-    if '+' or '-' in coeffVar and '[' in coeffVar:
-        return coeff+'[sec('+inside+')]^(2)('+bracketBreakdown(inside,variable)+')'
-    
-    elif '+' or '-' in inside and checkLowestChain(inside,variable)==True:
+    [coeff,inside] = function.split('tan',1)
+    if '+' or '-' in inside and checkLowestChain(inside,variable)==True:
          return coeff+'[sec('+inside+')]^(2)('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable)!='1' else coeff+'[sec('+inside+')]^(2)'
-    
     else:
         return coeff+'[sec('+inside+')]^(2)('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else coeff+'[sec('+inside+')]^(2)'
 
 # Differentiates Secant Function
 def diffCsc(function,variable):
-    [coeff,inside] = function.split('csc(',1)
-    inside=inside[:-1]
-    if '+' or '-' in coeffVar and '[' in coeffVar:
-        return '-'+coeff+'csc('+inside+')cot('+inside+')('+bracketBreakdown(inside,variable)+')'
-    
-    elif '+' or '-' in inside and checkLowestChain(inside,variable)==True:
+    [coeff,inside] = function.split('csc',1)
+    if '+' or '-' in inside and checkLowestChain(inside,variable)==True:
         return '-'+coeff+'csc('+inside+')cot('+inside+')('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable)!='1' else '-'+coeff+'csc('+inside+')cot('+inside+')'
-    
     else:
         return '-'+coeff+'csc('+inside+')cot('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else '-'+coeff+'csc('+inside+')cot('+inside+')'
 
 # Differentiates Cosecant Function
 def diffSec(function,variable):
-    [coeff,inside] = function.split('sec(',1)
-    inside=inside[:-1]
-    if '+' or '-' in coeffVar and '[' in coeffVar:
-        return coeff+'sec('+inside+')tan('+inside+')('+bracketBreakdown(inside,variable)+')'
-    
-    elif '+' or '-' in inside and checkLowestChain(inside,variable)==True:
+    [coeff,inside] = function.split('sec',1)
+    if '+' or '-' in inside and checkLowestChain(inside,variable)==True:
         return coeff+'sec('+inside+')tan('+inside+')('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable)!='1' else coeff+'sec('+inside+')tan('+inside+')'
-    
     else:
         return coeff+'sec('+inside+')tan('+inside+')('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else coeff+'sec('+inside+')tan('+inside+')'
 
 # Differentiates Cotangent Function
 def diffCot(function,variable):
-    [coeff,inside] = function.split('cot(',1)
-    inside=inside[:-1]
-    if '+' or '-' in coeffVar and '[' in coeffVar:
-        return '-'+coeff+'[csc('+inside+')]^(2)('+bracketBreakdown(inside,variable)+')'
-    
-    elif '+' or '-' in inside and checkLowestChain(inside,variable)==True:
+    [coeff,inside] = function.split('cot',1)
+    if '+' or '-' in inside and checkLowestChain(inside,variable)==True:
         return '-'+coeff+'[csc('+inside+')]^(2)('+diffMultiTerm(inside,variable)+')' if diffMultiTerm(inside,variable)!='1' else '-'+coeff+'[csc('+inside+')]^(2)'
-    
     else:
         return '-'+coeff+'[csc('+inside+')]^(2)('+strParser(inside,variable)+')' if strParser(inside,variable)!='1' else '-'+coeff+'[csc('+inside+')]^(2)'
 
@@ -144,47 +113,31 @@ def cleanup(function):
 # Differentiates General Exponential Function
 def diffExponential(function,variable):
     [coeff,coeffVar] = function.split('exp',1)
-    if '+' or '-' in coeffVar and '[' in coeffVar:
-        return '('+function+')('+bracketBreakdown(coeffVar[1:-1],variable)+')'
-    
-    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
         return '('+function+')('+diffMultiTerm(coeffVar[1:-1],variable)+')'
-    
     else:
         return function+strParser(coeffVar[1:-1],variable)
 
 # Differentiates Natural Log functions
 def diffNaturalLog(function,variable):
-    [coeff,coeffVar] = function.split('ln(',1)
-    coeffVar=coeffVar[:-1]
-    if '+' or '-' in coeffVar and '[' in coeffVar:
+    [coeff,coeffVar] = function.split('ln',1)
+    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
         return '('+coeff+')('+diffMultiTerm(coeffVar,variable)+')/('+coeffVar+')'
-
-    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
-        return '('+coeff+')('+bracketBreakdown(coeffVar,variable)+')/('+coeffVar+')'
-    
     else:
         return coeff+strParser(coeffVar,variable)+'/'+coeffVar
 
 def diffLog(function,variable):
     [coeff,coeffVar] = function.split('log_',1)
     [base,argument] = coeffVar.split('(',1)
-    if '+' or '-' in argument and '[' in argument:
-        return '('+coeff+')('+bracketBreakdown(argument,variable)+')/(ln('+base+')('+argument+'))'
-    
-    elif '+' or '-' in argument and checkLowestChain(coeffVar,variable)==True:
+    if '+' or '-' in argument and checkLowestChain(coeffVar,variable)==True:
         return '('+coeff+')('+diffMultiTerm(argument,variable)+')/(ln('+base+')('+argument+'))'
-    
     else:
         return '('+coeff+')('+strParser(argument,variable)+')/(ln('+base+')('+argument+'))'
 
 # Differentiates Arctangent functions
 def diffArctan(function,variable):
-    [coeff,coeffVar] = function.split('arctan(',1)
-    if '+' or '-' in coeffVar and '[' in coeffVar:
-        return '('+coeff+')('+bracketBreakdown(coeffVar[:-1],variable)+')(1/(1+('+coeffVar[:-1]+')^2)'
-
-    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+    [coeff,coeffVar] = function.split('arctan',1)
+    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
         return '('+coeff+')('+diffMultiTerm(coeffVar[:-1],variable)+')(1/(1+('+coeffVar[:-1]+')^2)'
 
     else:
@@ -192,71 +145,50 @@ def diffArctan(function,variable):
 
 # Differentiates Arcsine functions
 def diffArcsin(function,variable):
-    [coeff,coeffVar] = function.split('arcsin(',1)
-    coeffVar=coeffVar[:-1]
-    if '+' or '-' in coeffVar  and '[' in coeffVar:
-        return '('+coeff+')('+bracketBreakdown(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
-
-    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+    [coeff,coeffVar] = function.split('arcsin',1)
+    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
         return '('+coeff+')('+diffMultiTerm(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
-    
     else:
         return '('+coeff+')('+strParser(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
 
 # Differentiations Arccosine functions
 def diffArccos(function,variable):
-    [coeff,coeffVar] = function.split('arccos(',1)
-    coeffVar=coeffVar[:-1]
-    if '+' or '-' in coeffVar  and '[' in coeffVar:
-        return '(-1)('+coeff+')('+bracketBreakdown(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
-
-    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+    [coeff,coeffVar] = function.split('arccos',1)
+    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
         return '(-1)('+coeff+')('+diffMultiTerm(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
-    
     else:
         return '(-1)('+coeff+')('+strParser(coeffVar,variable) + ')(1/sqrt(1-('+coeffVar+')^2)'
 
 # Differentiates Arccotangent functions
 def diffArccot(function,variable):
-    [coeff,coeffVar] = function.split('arccot(',1)
+    [coeff,coeffVar] = function.split('arccot',1)
     coeffVar=coeffVar[:-1]
-    if '+' or '-' in coeffVar and '[' in coeffVar:
-        return '(-1)('+coeff+')('+bracketBreakdown(coeffVar,variable)+')(1/(1+('+coeffVar+')^2))'
-
-    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
         return '(-1)('+coeff+')('+diffMultiTerm(coeffVar,variable)+')(1/(1+('+coeffVar+')^2))'
-    
     else:
         return '(-1)('+coeff+')('+strParser(coeffVar,variable)+')(1/(1+('+coeffVar+')^2))'
 
 # Differentiates arcsecant functions
 def diffArcsec(function,variable):
-    [coeff,coeffVar] = function.split('arcsec(',1)
-    coeffVar=coeffVar[:-1]
-    if '+' or '-' in coeffVar and '[' in coeffVar:
-        return '('+coeff+')('+bracketBreakdown(coeffVar,variable) + ')(1/(|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
-
-    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+    [coeff,coeffVar] = function.split('arcsec',1)
+    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
         return '('+coeff+')('+diffMultiTerm(coeffVar,variable) + ')(1/(|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
-    
     else:
         return '('+coeff+')('+strParser(coeffVar,variable) + ')(1/(|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
 
 # Differentiates Arccosecant functions
 def diffArccsc(function,variable):
-    [coeff,coeffVar] = function.split('arccsc(',1)
-    coeffVar=coeffVar[:-1]
-    if '+' or '-' in coeffVar and '[' in coeffVar:
-        return '(-1)('+coeff+')('+bracketBreakdown(coeffVar,variable) + ')(1/|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
-
-    elif '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
+    [coeff,coeffVar] = function.split('arccsc',1)
+    if '+' or '-' in coeffVar and checkLowestChain(coeffVar,variable)==True:
         return '(-1)('+coeff+')('+diffMultiTerm(coeffVar,variable) + ')(1/|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
-    
     else:
         return '(-1)('+coeff+')('+strParser(coeffVar,variable) + ')(1/|'+coeffVar+'|sqrt(('+coeffVar+')^2+1))'
 
 # Differentiates functions that are separated by + and - operators
 def diffMultiTerm(function,variable):
+    function=function.replace('(','')
+    function=function.replace(')','')
+    function=function.replace(' ','')
     [left,right]=[function,'']
     operations=[]
     terms = []
@@ -291,10 +223,8 @@ def diffMultiTerm(function,variable):
             else:
                 terms.append(right)
             left=''
-        
-    for item in terms:
-        diffedTerms.append(strParser(term,variable))
-
+ 
+    diffedTerms=[strParser(term,variable) for term in terms]
     counter=0
     for op in range(len(operations)):
         if operations[counter]=='-':
@@ -311,6 +241,9 @@ def diffMultiTerm(function,variable):
 
 # Parses the input to determine how to differentiate the term
 def strParser(term,variable):
+    if '(0)' in term:
+        term='0'
+        
     lowestTerm = chainRule(term,variable)
     if lowestTerm=='<':
         if '>*<' in term and '>/<' not in term:
@@ -325,6 +258,9 @@ def strParser(term,variable):
             
             else:
                 return productRule(term,variable)
+
+    elif lowestTerm==']':
+        return performTermCutting(term,variable)
     
     elif lowestTerm==']^':
         return exponentDiffRule(term,variable)
@@ -381,8 +317,7 @@ def strParser(term,variable):
         return diffConstant(term)
     
     else:
-        print('I\'m not sure what this term is. Please contact me with what the term is so I can fix the issue.\nEmail: caseypersonalschooling@gmail.com')
-        sys.exit()
+        print('I don\'t know what this is.')
 
 # Checks for the ordering of the chain; then, uses recurrsion to keep differentiating until the chain is complete
 def chainRule(term,variable):
@@ -396,7 +331,12 @@ def chainRule(term,variable):
                 lowNum=term.find(typ)
                 currentLowest=typ
 
-    if '[' in term and ']^' in term:
+    if '[' in term and ']' in term and ']^' not in term:
+        if(term.find('[')<lowNum):
+            lowNum=term.find('[')
+            currentLowest=']'
+
+    elif '[' in term and ']^' in term:
         if(term.find('[')<lowNum):
             lowNum=term.find('[')
             currentLowest=']^'
@@ -406,120 +346,40 @@ def chainRule(term,variable):
         currentLowest='const'
     except:
         pass
+            
     return currentLowest
 
 # Differentiates products of functions
 def productRule(function,variable):
     [pieceOne,pieceTwo] = function.split('>*<',1)
     [pieceOne,pieceTwo] = [pieceOne[1:],pieceTwo[:-1]]
-    if ']' in pieceTwo and ']' not in pieceOne:
-        if '+' or '-' in pieceOne and '+' or '-' not in pieceTwo:
-            return '('+diffMultiTerm(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+bracketBreakdown(pieceTwo,variable)+')'
+    if '+' or '-' in pieceOne and '+' or '-' not in pieceTwo:
+        return '('+diffMultiTerm(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+strParser(pieceTwo,variable)+')'
 
-        elif '+' or '-' not in pieceOne and '+' or '-' in pieceTwo:
-            return '('+strParser(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+bracketBreakdown(pieceTwo,variable)+')'
+    elif '+' or '-' not in pieceOne and '+' or '-' in pieceTwo:
+        return '('+strParser(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+diffMultiTerm(pieceTwo,variable)+')'
 
-        elif '+' or '-' in pieceOne and '+' or '-' in pieceTwo:
-            return '('+diffMultiTerm(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+bracketBreakdown(pieceTwo,variable)+')'
-
-        else:
-            return '('+strParser(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+bracketBreakdown(pieceTwo,variable)+')'
-   
-    elif ']' in pieceOne and ']' not in pieceTwo:
-        if '+' or '-' in pieceOne and '+' or '-' not in pieceTwo:
-            return '('+bracketBreakdown(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+strParser(pieceTwo,variable)+')'
-
-        elif '+' or '-' not in pieceOne and '+' or '-' in pieceTwo:
-            return '('+bracketBreakdown(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+diffMultiTerm(pieceTwo,variable)+')'
-
-        elif '+' or '-' in pieceOne and '+' or '-' in pieceTwo:
-            return '('+bracketBreakdown(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+bracketBreakdown(pieceTwo,variable)+')'
-
-        else:
-            return '('+bracketBreakdown(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+strParser(pieceTwo,variable)+')'
-        
-    elif ']' in pieceOne and ']' in pieceTwo:
-        if '+' or '-' in pieceOne and '+' or '-' not in pieceTwo:
-            return '('+bracketBreakdown(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+bracketBreakdown(pieceTwo,variable)+')'
-
-        elif '+' or '-' not in pieceOne and '+' or '-' in pieceTwo:
-            return '('+bracketBreakdown(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+bracketBreakdown(pieceTwo,variable)+')'
-
-        elif '+' or '-' in pieceOne and '+' or '-' in pieceTwo:
-            return '('+bracketBreakdown(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+bracketBreakdown(pieceTwo,variable)+')'
-
-        else:
-            return '('+bracketBreakdown(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+bracketBreakdown(pieceTwo,variable)+')'
+    elif '+' or '-' in pieceOne and '+' or '-' in pieceTwo:
+        return '('+diffMultiTerm(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+diffMultiTerm(pieceTwo,variable)+')'
 
     else:
-        if '+' or '-' in pieceOne and '+' or '-' not in pieceTwo:
-            return '('+diffMultiTerm(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+strParser(pieceTwo,variable)+')'
-
-        elif '+' or '-' not in pieceOne and '+' or '-' in pieceTwo:
-            return '('+strParser(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+diffMultiTerm(pieceTwo,variable)+')'
-
-        elif '+' or '-' in pieceOne and '+' or '-' in pieceTwo:
-            return '('+diffMultiTerm(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+diffMultiTerm(pieceTwo,variable)+')'
-
-        else:
-            return '('+strParser(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+strParser(pieceTwo,variable)+')'
+        return '('+strParser(pieceOne,variable)+')('+pieceTwo+') + ('+pieceOne+')('+strParser(pieceTwo,variable)+')'
 
 # Differentiates quotients of functions
 def quotientRule(function,variable):
     [numer,denom] = function.split('>/<',1)
-    if ']' in numer and ']' not in denom:
-        if '+' or '-' in numer and '+' or '-' not in denom:
-            return '[('+denom+')('+bracketBreakdown(numer,variable)+') - ('+numer+')('+strParser(denom,variable)+')]/('+denom+')^2'
+    if '+' or '-' in numer and '+' or '-' not in denom:
+        return '[('+denom+')('+diffMultiTerm(numer,variable)+') - ('+numer+')('+strParser(denom,variable)+')]/('+denom+')^2'
 
-        elif '+' or '-' not in numer and '+' or '-' in denom:
-            return '[('+denom+')('+bracketBreakdown(numer,variable)+') - ('+numer+')('+diffMultiTerm(denom,variable)+')]/('+denom+')^2'
+    elif '+' or '-' not in numer and '+' or '-' in denom:
+        return '[('+denom+')('+strParser(numer,variable)+') - ('+numer+')('+diffMultiTerm(denom,variable)+')]/('+denom+')^2'
 
-        elif '+' or '-' in numer and '+' or '-' in denom:
-            return '[('+denom+')('+bracketBreakdown(numer,variable)+') - ('+numer+')('+diffMultiTerm(denom,variable)+')]/('+denom+')^2'
-
-        else:
-            return '[('+denom+')('+bracketBreakdown(numer,variable)+') - ('+numer+')('+strParser(denom,variable)+')]/('+denom+')^2'
-
-    elif ']' in denom and ']' not in numer:
-        if '+' or '-' in numer and '+' or '-' not in denom:
-            return '[('+denom+')('+diffMultiTerm(numer,variable)+') - ('+numer+')('+bracketBreakdown(denom,variable)+')]/('+denom+')^2'
-
-        elif '+' or '-' not in numer and '+' or '-' in denom:
-            return '[('+denom+')('+strParser(numer,variable)+') - ('+numer+')('+bracketBreakdown(denom,variable)+')]/('+denom+')^2'
-
-        elif '+' or '-' in numer and '+' or '-' in denom:
-            return '[('+denom+')('+diffMultiTerm(numer,variable)+') - ('+numer+')('+bracketBreakdown(denom,variable)+')]/('+denom+')^2'
-
-        else:
-            return '[('+denom+')('+strParser(numer,variable)+') - ('+numer+')('+bracketBreakdown(denom,variable)+')]/('+denom+')^2'
-
-    elif ']' in denom and ']' in numer:
-        if '+' or '-' in numer and '+' or '-' not in denom:
-            return '[('+denom+')('+bracketBreakdown(numer,variable)+') - ('+numer+')('+bracketBreakdown(denom,variable)+')]/('+denom+')^2'
-
-        elif '+' or '-' not in numer and '+' or '-' in denom:
-            return '[('+denom+')('+bracketBreakdown(numer,variable)+') - ('+numer+')('+bracketBreakdown(denom,variable)+')]/('+denom+')^2'
-
-        elif '+' or '-' in numer and '+' or '-' in denom:
-            return '[('+denom+')('+bracketBreakdown(numer,variable)+') - ('+numer+')('+bracketBreakdown(denom,variable)+')]/('+denom+')^2'
-
-        else:
-            return '[('+denom+')('+bracketBreakdown(numer,variable)+') - ('+numer+')('+bracketBreakdown(denom,variable)+')]/('+denom+')^2'
+    elif '+' or '-' in numer and '+' or '-' in denom:
+        return '[('+denom+')('+diffMultiTerm(numer,variable)+') - ('+numer+')('+diffMultiTerm(denom,variable)+')]/('+denom+')^2'
     
     else:
-        if '+' or '-' in numer and '+' or '-' not in denom:
-            return '[('+denom+')('+diffMultiTerm(numer,variable)+') - ('+numer+')('+strParser(denom,variable)+')]/('+denom+')^2'
+        return '[('+denom+')('+strParser(numer,variable)+') - ('+numer+')('+strParser(denom,variable)+')]/('+denom+')^2'
 
-        elif '+' or '-' not in numer and '+' or '-' in denom:
-            return '[('+denom+')('+strParser(numer,variable)+') - ('+numer+')('+diffMultiTerm(denom,variable)+')]/('+denom+')^2'
-
-        elif '+' or '-' in numer and '+' or '-' in denom:
-            return '[('+denom+')('+diffMultiTerm(numer,variable)+') - ('+numer+')('+diffMultiTerm(denom,variable)+')]/('+denom+')^2'
-
-        else:
-            return '[('+denom+')('+strParser(numer,variable)+') - ('+numer+')('+strParser(denom,variable)+')]/('+denom+')^2'
-
-        
 # Differentiates a funciton raised to a power
 def exponentDiffRule(function,variable):
     [beg,middle] = function.split('[',1)
@@ -527,12 +387,8 @@ def exponentDiffRule(function,variable):
     [power,rest] = outer.split(')',1)
     try:
         new_power = str(float(power)-1)
-        if '+' or '-' in inner and '[':
-            return '('+power+')('+inner+')^('+new_power+')('+bracketBreakdown(inner,variable)+')'
-
-        elif '+' or '-' in inner and '[' not in inner:
+        if '+' or '-' in inner:
             return '('+power+')('+inner+')^('+new_power+')('+diffMultiTerm(inner,variable)+')'
-        
         else:
             return '('+power+')('+inner+')^('+new_power+')('+strParser(inner,variable)+')'
 
@@ -543,6 +399,9 @@ def exponentDiffRule(function,variable):
 
 # Cuts terms via the character, @
 def performTermCutting(function,variable):
+    function=function.replace('(','')
+    function=function.replace(')','')
+    function=function.replace(' ','')
     terms = function.split('@')
     operations = []
     diffedTerms=[]
@@ -581,7 +440,7 @@ def performTermCutting(function,variable):
     return returnStatement
 
 # The 'UI' function for people to input functions to be differentiated
-def performTotalDifferentiation(variable):
+def performTotalDifferentiation():
     print('Type \'stop\' if you don\'t want to continue differentiating. Type \'help\' for how to use program.')
     print('\n')
     recursiveAsk(variable)
@@ -592,6 +451,10 @@ def recursiveAsk(variable):
 
     if diffedFunction=='stop':
         print('Goodbye')
+        
+    elif diffedFunction=='':
+        print('You\'ve entered a blank string. Type in a function or the program doesn\'t work.')
+        recursiveAsk(variable)
 
     elif diffedFunction=='help':
         print('Rules: \nIf you want to mult/div complex terms, type <term_1>*/<term_2>. For simple terms, just use term_1*/term_2.\nIf you want to raise a term to a power, type [term_1]^(power).\nIf you want to have a term have more than one addition/subtraction operation, type [term_1 + term_2+etc]*[term_3].\nAnd if you want to find the derivative of a sum of functions, type: term_1 @+ term_2 @+ term_3 etc. Use @- for subtraction.')
@@ -647,81 +510,3 @@ def checkLowestChain(function,variable):
         return True
     
     return True
-
-
-def bracketBreakdown(function,variable):
-    terms=[]
-    diffedTerms=[]
-    [outer,inner]=[function,'']
-    counter=1
-    while outer!='':
-        if ('[' and ']' in outer) and outer.find('[')<outer.find('+') or outer.find('[')<outer.find('-'):
-            if outer.find('+')<outer.find('-') or ('-' not in outer and '+' in outer):
-                [originalOuter,originalInner] = [outer,inner]
-                [outer,inner] = ['+'.join(outer.split('+')[:counter]), '+'.join(outer.split('+')[counter:])]
-                if '[' in outer and ']' not in outer:
-                    counter+=1
-                    [outer,inner]=[originalOuter,originalInner]
-
-                else:
-                    if '[' in outer:
-                        terms.append(outer)
-                    else:
-                        terms.append(outer)
-                    counter=1
-                    [outer,inner]=[inner,'']
-
-            elif outer.find('-')<outer.find('+') or ('+' in outer and '-' not in other):
-                [originalOuter,originalInner]=[outer,inner]
-                [outer,inner]='-'.join(outer.split('-')[:counter]), '-'.join(outer.split('-')[counter:])
-                if '[' in outer and ']' not in outer:
-                    counter+=1
-                    [outer,inner]=[originalOuter,originalInner]
-
-                else:
-                    terms.append(outer)
-                    counter=1
-                    [outer,inner]=[inner,'']
-
-            else:
-                terms.append(outer)
-                break
-                
-        elif outer.find('+') or outer.find('-') < outer.find('['):
-            if outer.find('+') < outer.find('-') or '+' in outer and '-' not in outer:
-                [outer,inner] = outer.split('+',1)
-                terms.append(outer)
-                [outer,inner] = [inner,'']
-
-            elif outer.find('-') < outer.find('+') or '-' in outer and '+' not in outer:
-                [outer,inner] = outer.split('-',1)
-                terms.append(outer)
-                [outer,inner]=[inner,'']
-
-            else:
-                terms.append(outer)
-                break
-    
-        else:
-            terms.append(inner)
-            break
-            
-    indexManip = 0
-    for item in terms:
-        terms[indexManip] = terms[indexManip].replace(' ','')
-        if '[' in terms[indexManip]:
-            terms[indexManip] = terms[indexManip].replace('[','')
-            terms[indexManip] = terms[indexManip].replace(']','')
-            
-        diffedTerms.append(strParser(terms[indexManip],variable))
-
-        indexManip+=1
-        
-    returnString = ''
-    for item in diffedTerms:
-        if returnString=='':
-            returnString+=item
-            
-        else:
-            returnString+=item
-    return returnString
