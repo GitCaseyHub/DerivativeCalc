@@ -1,5 +1,5 @@
 # Program to perform general differentiation
-# Issue with DiffMultiTerm of term separation (of course!)
+
 # Differentiations functions of the form: ax^(f(x))
 def polyRule(function,variable):
     if '^' not in function:
