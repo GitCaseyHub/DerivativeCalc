@@ -446,7 +446,7 @@ def performTermCutting(function,variable):
     return returnStatement
 
 # The 'UI' function for people to input functions to be differentiated
-def performTotalDifferentiation():
+def performTotalDifferentiation(variable):
     print('Type \'stop\' if you don\'t want to continue differentiating. Type \'help\' for how to use program.')
     print('\n')
     recursiveAsk(variable)
