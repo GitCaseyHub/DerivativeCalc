@@ -1,4 +1,8 @@
 # Program to perform general differentiation
+# How to use the program:
+# Open a jupyter notebook, paste this code in to a cell and compile; then, in a new cell, run: performTotalDifferentiation()
+# For certain types of operations, there are special commands/notation, so type 'help' after performTotalDifferentiation() has been run, 
+# and it will inform you how to do certain actions
 
 # Differentiations functions of the form: ax^(f(x))
 def polyRule(function,variable):
