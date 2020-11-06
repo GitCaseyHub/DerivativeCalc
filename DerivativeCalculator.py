@@ -5,7 +5,6 @@
 # and it will inform you how to do certain actions
 
 import sys
-
 # Differentiations functions of the form: ax^(f(x))
 def polyRule(function,variable):
     if '^' not in function:
@@ -497,7 +496,6 @@ def checkLowestChain(function,variable):
                 [left,right] = left.split('+',1)
                 if chainRule(left,variable)==variable or chainRule(left,variable)==variable+'^' or chainRule(left,variable)=='const':
                     pass
-                    
                 else:
                     return False
                 
@@ -505,14 +503,10 @@ def checkLowestChain(function,variable):
                 [left,right] = left.split('-',1)
                 if chainRule(left,variable)==variable or chainRule(left,variable)==variable+'^' or chainRule(left,variable)=='const':
                     pass
-                    
                 else:
-                    return False
-                
-                
+                    return False              
             else:
                 break
-        
     else:
         return True
     
