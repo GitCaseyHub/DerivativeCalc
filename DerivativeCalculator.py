@@ -4,6 +4,8 @@
 # For certain types of operations, there are special commands/notation, so type 'help' after performTotalDifferentiation() has been run, 
 # and it will inform you how to do certain actions
 
+import sys
+
 # Differentiations functions of the form: ax^(f(x))
 def polyRule(function,variable):
     if '^' not in function:
@@ -321,7 +323,8 @@ def strParser(term,variable):
         return diffConstant(term)
     
     else:
-        print('I don\'t know what this is.')
+        print('I don\'t know what this is. Contact me @ caseypersonalschooling@gmail.com with the term and error you\'ve received.')
+        sys.exit('An unaccounted-for string has been entered, and the derivative cannot be calculated.')
 
 # Checks for the ordering of the chain; then, uses recurrsion to keep differentiating until the chain is complete
 def chainRule(term,variable):
