@@ -404,7 +404,7 @@ def exponentDiffRule(function,variable):
         return function+'('+productRule('<ln('+inner+')>*<'+outer+'>','x')+')'
 
 # Cuts terms via the character, @
-def performTermCutting(function,variable)
+def performTermCutting(function,variable):
     terms = function.split('@')
     operations = []
     diffedTerms=[]
